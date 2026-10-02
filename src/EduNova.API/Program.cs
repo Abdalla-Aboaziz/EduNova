@@ -5,7 +5,11 @@ using EduNova.Infrastructure;
 using Serilog;
 
 // ── Bootstrap Serilog ───────────────────────────────────────────────────
+// Temporary logger used only until the host is built and the real
+// configuration is loaded. It captures errors that happen during startup.
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
@@ -16,8 +20,12 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // ── Serilog ─────────────────────────────────────────────────────────
-    builder.Host.UseSerilog((context, services, configuration) =>
-        configuration.ReadFrom.Configuration(context.Configuration));
+    // Replaces the default logger. Levels, sinks and enrichers are read from
+    // the "Serilog" section in appsettings.json.
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
     // ── Register services per layer (Clean Architecture DI) ─────────────
     builder.Services
@@ -29,6 +37,9 @@ try
     var app = builder.Build();
 
     // ── Serilog request logging ─────────────────────────────────────────
+    // Writes one summary line per HTTP request (method, path, status, duration).
+    // Placed before the API middleware so it records the final status code,
+    // including the ones produced by the global exception handler.
     app.UseSerilogRequestLogging();
 
     // ── Configure middleware pipeline ───────────────────────────────────
@@ -36,11 +47,14 @@ try
 
     app.Run();
 }
-catch (Exception ex)
+catch (Exception ex) when (ex is not HostAbortedException)
 {
+    // HostAbortedException is thrown on purpose by EF Core tooling
+    // (e.g. dotnet ef migrations), so it must not be logged as a crash.
     Log.Fatal(ex, "Application terminated unexpectedly");
 }
 finally
 {
+    // Make sure all buffered logs are written before the process exits.
     Log.CloseAndFlush();
 }

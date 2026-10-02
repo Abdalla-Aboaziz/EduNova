@@ -1,25 +1,21 @@
-using FluentValidation;
-using FluentValidation.Results;
-
 namespace EduNova.Application.Common.Exceptions;
 
-/// <summary>
-/// Thrown when one or more FluentValidation rules fail.
-/// Aggregates all validation errors into a dictionary for structured API responses.
-/// </summary>
-public class ValidationException : Exception
+public class ValidationException() :
+    AppException(400, DefaultCode, "One or more validation errors occurred.")
 {
-    public IDictionary<string, string[]> Errors { get; }
+    private const string DefaultCode = "VALIDATION_ERROR";
 
-    public ValidationException() : base("One or more validation failures have occurred.")
+    // Field name -> list of error messages
+    public IDictionary<string, string[]> Errors { get; } = new Dictionary<string, string[]>();
+
+    public ValidationException(IDictionary<string, string[]> errors)
+        : this()
     {
-        Errors = new Dictionary<string, string[]>();
+        Errors = errors;
     }
 
-    public ValidationException(IEnumerable<ValidationFailure> failures) : this()
+    public ValidationException(string field, string message)
+        : this(new Dictionary<string, string[]> { [field] = [message] })
     {
-        Errors = failures
-            .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
-            .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
     }
 }
