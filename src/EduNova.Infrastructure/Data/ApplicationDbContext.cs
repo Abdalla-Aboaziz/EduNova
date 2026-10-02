@@ -1,3 +1,4 @@
+using EduNova.Domain.Entities;
 using EduNova.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
 
         base.OnModelCreating(modelBuilder);
     }
+    public DbSet<Lecture> Lectures => Set<Lecture>();
+    public DbSet<MyListItem> MyListItems => Set<MyListItem>();
+    public DbSet<DownloadedLecture> DownloadedLectures => Set<DownloadedLecture>();
 
 
 }
