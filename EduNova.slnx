@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EduNova.API/EduNova.API.csproj" />
+    <Project Path="src/EduNova.Application/EduNova.Application.csproj" />
+    <Project Path="src/EduNova.Domain/EduNova.Domain.csproj" />
+    <Project Path="src/EduNova.Infrastructure/EduNova.Infrastructure.csproj" />
+  </Folder>
+</Solution>
