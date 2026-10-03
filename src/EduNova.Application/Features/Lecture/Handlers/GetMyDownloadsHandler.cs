@@ -1,4 +1,4 @@
-﻿using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Features.Lecture.Queries;
 using EduNova.Application.Features.Lecture.Responses;
 using EduNova.Application.Interfaces;
@@ -7,24 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduNova.Application.Features.Lecture.Handlers
 {
-    public class GetMyDownloadsHandler : IRequestHandler<GetMyDownloadsQuery, List<DownloadResponse>>
+    public sealed class GetMyDownloadsHandler(
+        IApplicationDbContext context, ICurrentUserService currentUser)
+        : IRequestHandler<GetMyDownloadsQuery, List<DownloadResponse>>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly ICurrentUserService _currentUser;
-
-        public GetMyDownloadsHandler(IApplicationDbContext context, ICurrentUserService currentUser)
-        {
-            _context = context;
-            _currentUser = currentUser;
-        }
         public Task<List<DownloadResponse>> Handle(GetMyDownloadsQuery request, CancellationToken cancellationToken)
         {
-            var userId = "101";//_currentUser.UserId;  ToDo: Get the current user ID from the ICurrentUserService
-            var downloads = _context.DownloadedLectures
+            var userId = "101";//_currentUserService.UserId;  ToDo: Get the current user ID from the ICurrentUserService
+
+            var downloads = context.DownloadedLectures
              .AsNoTracking()
              .Where(d => d.UserId == userId)
              .OrderByDescending(d => d.DownloadedAt)
-             .Join(_context.Lectures,
+             .Join(context.Lectures,
                    d => d.LectureId,
                    l => l.Id,
                    (d, l) => new DownloadResponse
