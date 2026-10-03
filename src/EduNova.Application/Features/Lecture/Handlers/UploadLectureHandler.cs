@@ -1,12 +1,14 @@
-﻿using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Features.Lecture.Commands;
 using EduNova.Application.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace EduNova.Application.Features.Lecture.Handlers
 {
     public sealed class UploadLectureHandler(
-     IApplicationDbContext context, IFileService fileService, ICurrentUserService currentUser)
+     IApplicationDbContext context, IFileService fileService, ICurrentUserService currentUser,
+     ILogger<UploadLectureHandler> logger)
      : IRequestHandler<UploadLectureCommand, Guid>
     {
         public async Task<Guid> Handle(UploadLectureCommand request, CancellationToken cancellationToken)
@@ -17,7 +19,9 @@ namespace EduNova.Application.Features.Lecture.Handlers
             try
             {
                 if (request.Thumbnail is not null)
+                {
                     thumbnailId = await fileService.UploadAsync(request.Thumbnail, cancellationToken);
+                }
 
                 var lecture = new EduNova.Domain.Entities.Lecture
                 {
@@ -33,10 +37,15 @@ namespace EduNova.Application.Features.Lecture.Handlers
 
                 await context.Lectures.AddAsync(lecture, cancellationToken);
                 await context.SaveChangesAsync(cancellationToken);
+
                 return lecture.Id;
             }
-            catch
+            catch (Exception ex)
             {
+                logger.LogError(ex,
+                    "Failed to upload lecture '{Title}' for SubjectId {SubjectId}. Cleaning up uploaded files. VideoFileId: {VideoFileId}, ThumbnailFileId: {ThumbnailFileId}",
+                    request.Title, request.SubjectId, videoId, thumbnailId);
+
                 await fileService.DeleteAsync(videoId, cancellationToken);
                 if (thumbnailId is not null)
                     await fileService.DeleteAsync(thumbnailId.Value, cancellationToken);
@@ -46,4 +55,3 @@ namespace EduNova.Application.Features.Lecture.Handlers
     }
 
 }
-

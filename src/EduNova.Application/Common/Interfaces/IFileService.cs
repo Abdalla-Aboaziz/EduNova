@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace EduNova.Application.Common.Interfaces
 {
@@ -7,5 +7,6 @@ namespace EduNova.Application.Common.Interfaces
         Task<Guid> UploadAsync(IFormFile file, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task<(FileStream? stream, string contentType, string fileName)> StreamAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<(byte[] fileContent, string contentType, string fileName)> DownloadAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

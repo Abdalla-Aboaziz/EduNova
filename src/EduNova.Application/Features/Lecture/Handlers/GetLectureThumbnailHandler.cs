@@ -1,12 +1,15 @@
-﻿using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Features.Lecture.Queries;
 using EduNova.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EduNova.Application.Features.Lecture.Handlers
 {
-    public sealed class GetLectureThumbnailHandler(IApplicationDbContext context, IFileService fileService)
+    public sealed class GetLectureThumbnailHandler(
+        IApplicationDbContext context, IFileService fileService,
+        ILogger<GetLectureThumbnailHandler> logger)
     : IRequestHandler<GetLectureThumbnailQuery, (FileStream? Stream, string ContentType, string FileName)>
     {
         public async Task<(FileStream? Stream, string ContentType, string FileName)> Handle(
@@ -19,7 +22,10 @@ namespace EduNova.Application.Features.Lecture.Handlers
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (thumbnailId is null)
+            {
+                logger.LogWarning("Thumbnail not found for LectureId {LectureId}", request.Id);
                 return (null, string.Empty, string.Empty);
+            }
 
             return await fileService.StreamAsync(thumbnailId.Value, cancellationToken);
         }

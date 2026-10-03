@@ -1,4 +1,4 @@
-﻿using EduNova.Application.Features.Lecture.Commands;
+using EduNova.Application.Features.Lecture.Commands;
 using EduNova.Application.Features.Lecture.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +35,13 @@ namespace EduNova.API.Controllers
         {
             var (stream, contentType, fileName) = await _mediator.Send(new GetLectureStreamQuery(id), cancellationToken);
             return stream is null ? NotFound() : File(stream, contentType, fileName, true);
+        }
+
+        [HttpGet("{id}/download")]
+        public async Task<IActionResult> Download([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new DownloadLectureQuery(id), cancellationToken);
+            return result is null ? NotFound() : File(result.Value.FileContent, result.Value.ContentType, result.Value.FileName);
         }
 
         [HttpDelete("{id}")]
