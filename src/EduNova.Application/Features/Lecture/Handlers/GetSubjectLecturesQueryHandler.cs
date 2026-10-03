@@ -26,7 +26,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
                  .Where(l => l.SubjectId == request.SubjectId)
                  .OrderBy(l => l.Order)
                  .Select(l => new LectureResponse(
-                     l.Id, l.Title, l.Description, l.Order, l.DurationInSeconds,
+                     l.Id, l.Title, l.Description, l.Order, l.DurationInSeconds, l.ThumbnailFileId != null,
                      l.MyListItems.Any(m => m.UserId == userId),
                      l.DownloadedLectures.Any(d => d.UserId == userId)))
                  .ToListAsync(cancellationToken);

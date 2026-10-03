@@ -40,6 +40,14 @@ namespace EduNova.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
             => await _mediator.Send(new DeleteLectureCommand(id), cancellationToken) ? NoContent() : NotFound();
+
+
+        [HttpGet("{id}/thumbnail")]
+        public async Task<IActionResult> Thumbnail([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var (stream, contentType, _) = await _mediator.Send(new GetLectureThumbnailQuery(id), cancellationToken);
+            return stream is null ? NotFound() : File(stream, contentType);
+        }
     }
 }
 

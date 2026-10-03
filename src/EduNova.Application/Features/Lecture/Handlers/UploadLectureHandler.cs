@@ -12,9 +12,13 @@ namespace EduNova.Application.Features.Lecture.Handlers
         public async Task<Guid> Handle(UploadLectureCommand request, CancellationToken cancellationToken)
         {
             var videoId = await fileService.UploadAsync(request.Video, cancellationToken);
+            Guid? thumbnailId = null;
 
             try
             {
+                if (request.Thumbnail is not null)
+                    thumbnailId = await fileService.UploadAsync(request.Thumbnail, cancellationToken);
+
                 var lecture = new EduNova.Domain.Entities.Lecture
                 {
                     SubjectId = request.SubjectId,
@@ -23,6 +27,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
                     Order = request.Order,
                     DurationInSeconds = request.DurationInSeconds,
                     VideoFileId = videoId,
+                    ThumbnailFileId = thumbnailId,
                     UploadedById = "100",      /// To Do Replase The "100" with currentUser.UserId when authentication is implemented
                 };
 
@@ -33,8 +38,12 @@ namespace EduNova.Application.Features.Lecture.Handlers
             catch
             {
                 await fileService.DeleteAsync(videoId, cancellationToken);
+                if (thumbnailId is not null)
+                    await fileService.DeleteAsync(thumbnailId.Value, cancellationToken);
                 throw;
             }
         }
     }
+
 }
+
