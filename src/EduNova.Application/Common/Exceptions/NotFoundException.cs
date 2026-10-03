@@ -1,17 +1,16 @@
 namespace EduNova.Application.Common.Exceptions;
-
-/// <summary>
-/// Thrown when a requested entity is not found in the database.
-/// </summary>
-public class NotFoundException : Exception
+ 
+public class NotFoundException : AppException
 {
-    public NotFoundException() : base() { }
-
-    public NotFoundException(string message) : base(message) { }
-
-    public NotFoundException(string message, Exception innerException)
-        : base(message, innerException) { }
-
+    private const string DefaultCode = "NOT_FOUND";
+ 
+    public NotFoundException(string message)
+        : base(404, DefaultCode, message)
+    {
+    }
+ 
     public NotFoundException(string entityName, object key)
-        : base($"Entity \"{entityName}\" ({key}) was not found.") { }
+        : base(404, DefaultCode, $"{entityName} with id '{key}' was not found.")
+    {
+    }
 }
