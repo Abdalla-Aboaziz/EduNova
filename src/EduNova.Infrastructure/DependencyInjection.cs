@@ -1,7 +1,11 @@
+using EduNova.Application.Common.Caching;
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Contracts;
 using EduNova.Application.Interfaces;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Files;
+using EduNova.Infrastructure.Repositories;
+using EduNova.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +37,10 @@ public static class DependencyInjection
         // Register additional infrastructure services here
         // Example: services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileService, FileService>();
+        
+        // register services in DI 
+        services.AddScoped<ICacheRepository, CacheRepository>();
+        services.AddScoped<ICacheService, CacheService>();
         return services;
     }
 }
