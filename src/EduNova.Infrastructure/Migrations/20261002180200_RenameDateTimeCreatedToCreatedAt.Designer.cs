@@ -4,6 +4,7 @@ using EduNova.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNova.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261002180200_RenameDateTimeCreatedToCreatedAt")]
+    partial class RenameDateTimeCreatedToCreatedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,8 @@ namespace EduNova.Infrastructure.Migrations
                     b.Property<Guid>("LectureId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -155,54 +157,39 @@ namespace EduNova.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UploadedFiles", (string)null);
+                    b.ToTable("UploadedFiles");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.DownloadedLecture", b =>
                 {
-                    b.HasOne("EduNova.Domain.Entities.Lecture", "Lecture")
-                        .WithMany("DownloadedLectures")
+                    b.HasOne("EduNova.Domain.Entities.Lecture", null)
+                        .WithMany()
                         .HasForeignKey("LectureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Lecture");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.Lecture", b =>
                 {
-                    b.HasOne("EduNova.Domain.Entities.UploadedFiles", "ThumbnailFile")
+                    b.HasOne("EduNova.Domain.Entities.UploadedFiles", null)
                         .WithMany()
                         .HasForeignKey("ThumbnailFileId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("EduNova.Domain.Entities.UploadedFiles", "VideoFile")
+                    b.HasOne("EduNova.Domain.Entities.UploadedFiles", null)
                         .WithMany()
                         .HasForeignKey("VideoFileId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("ThumbnailFile");
-
-                    b.Navigation("VideoFile");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.MyListItem", b =>
                 {
-                    b.HasOne("EduNova.Domain.Entities.Lecture", "Lecture")
-                        .WithMany("MyListItems")
+                    b.HasOne("EduNova.Domain.Entities.Lecture", null)
+                        .WithMany()
                         .HasForeignKey("LectureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Lecture");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Lecture", b =>
-                {
-                    b.Navigation("DownloadedLectures");
-
-                    b.Navigation("MyListItems");
                 });
 #pragma warning restore 612, 618
         }

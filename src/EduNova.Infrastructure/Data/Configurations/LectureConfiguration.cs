@@ -8,10 +8,19 @@ namespace EduNova.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Lecture> builder)
         {
-            builder.Property(x => x.Title).IsRequired().HasMaxLength(200);
+            builder.Property(x => x.Title).HasMaxLength(200);
             builder.HasIndex(x => new { x.SubjectId, x.Order });
-            builder.HasOne<UploadedFiles>().WithMany().HasForeignKey(x => x.VideoFileId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne<UploadedFiles>().WithMany().HasForeignKey(x => x.ThumbnailFileId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.VideoFile)
+             .WithMany()
+             .HasForeignKey(x => x.VideoFileId)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.ThumbnailFile)
+             .WithMany()
+             .HasForeignKey(x => x.ThumbnailFileId)
+             .IsRequired(false)
+             .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

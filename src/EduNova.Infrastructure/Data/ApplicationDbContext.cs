@@ -1,5 +1,5 @@
+using EduNova.Application.Interfaces;
 using EduNova.Domain.Entities;
-using EduNova.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduNova.Infrastructure.Data;
@@ -30,5 +30,5 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<MyListItem> MyListItems => Set<MyListItem>();
     public DbSet<DownloadedLecture> DownloadedLectures => Set<DownloadedLecture>();
 
-
+    public DbSet<UploadedFiles> Files => Set<UploadedFiles>();
 }

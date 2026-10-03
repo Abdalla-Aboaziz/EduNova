@@ -11,6 +11,11 @@
         public Guid VideoFileId { get; set; }
         public Guid? ThumbnailFileId { get; set; }
         public string UploadedById { get; set; } = string.Empty;
-        public DateTime DateTimeCreated { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public UploadedFiles VideoFile { get; set; } = null!;
+        public UploadedFiles? ThumbnailFile { get; set; }
+        public ICollection<MyListItem> MyListItems { get; set; } = [];
+        public ICollection<DownloadedLecture> DownloadedLectures { get; set; } = [];
     }
 }

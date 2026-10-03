@@ -1,5 +1,7 @@
-using EduNova.Domain.Interfaces;
+using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Interfaces;
 using EduNova.Infrastructure.Data;
+using EduNova.Infrastructure.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,9 +29,10 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
 
+
         // Register additional infrastructure services here
         // Example: services.AddScoped<IEmailService, EmailService>();
-
+        services.AddScoped<IFileService, FileService>();
         return services;
     }
 }

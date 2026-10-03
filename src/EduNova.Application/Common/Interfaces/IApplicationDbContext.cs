@@ -1,4 +1,7 @@
-namespace EduNova.Domain.Interfaces;
+using EduNova.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace EduNova.Application.Interfaces;
 
 /// <summary>
 /// Abstraction over the EF Core DbContext for the Application layer.
@@ -7,8 +10,9 @@ namespace EduNova.Domain.Interfaces;
 /// </summary>
 public interface IApplicationDbContext
 {
-    // Add your DbSet<TEntity> properties here as you create domain entities.
-    // Example: DbSet<Course> Courses { get; }
-
+    DbSet<Lecture> Lectures { get; }
+    DbSet<MyListItem> MyListItems { get; }
+    DbSet<DownloadedLecture> DownloadedLectures { get; }
+    DbSet<UploadedFiles> Files { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

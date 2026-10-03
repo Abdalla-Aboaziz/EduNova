@@ -1,11 +1,10 @@
-using System.Reflection;
 using EduNova.Application.Common.Behaviors;
 using EduNova.Application.Common.Mappings;
 using FluentValidation;
-using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace EduNova.Application;
 
@@ -37,6 +36,7 @@ public static class DependencyInjection
         var config = MappingConfig.GetConfiguredMappingConfig();
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
+
 
         return services;
     }

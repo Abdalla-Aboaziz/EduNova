@@ -1,7 +1,6 @@
-using EduNova.Application.Common.Interfaces;
 using EduNova.API.Middleware;
 using EduNova.API.Services;
-using Microsoft.Extensions.DependencyInjection;
+using EduNova.Application.Common.Interfaces;
 
 namespace EduNova.API;
 
@@ -33,6 +32,11 @@ public static class DependencyInjection
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/openapi/v1.json", "My API v1");
+            });
         }
 
         app.UseHttpsRedirection();
