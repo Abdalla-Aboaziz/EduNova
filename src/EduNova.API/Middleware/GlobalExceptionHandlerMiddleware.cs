@@ -1,75 +1,102 @@
-using System.Net;
-using System.Text.Json;
 using EduNova.Application.Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Middleware;
 
-/// <summary>
-/// Global exception handler middleware.
-/// Catches unhandled exceptions and returns structured JSON error responses.
-/// </summary>
-public class GlobalExceptionHandlerMiddleware
+
+
+/// Catches unhandled exceptions and returns structured ProblemDetails JSON responses
+
+public class GlobalExceptionHandlerMiddleware(
+    RequestDelegate next,
+    ILogger<GlobalExceptionHandlerMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
-
-    public GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
+        }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+        {
+            // The client closed the request; nothing to return and not an error
+            logger.LogInformation("Request was cancelled by the client.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
             await HandleExceptionAsync(context, ex);
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        context.Response.ContentType = "application/json";
-
-        var (statusCode, response) = exception switch
+        // If the response already started, we can't change status code or body
+        if (context.Response.HasStarted)
         {
-            ValidationException validationEx => (
-                HttpStatusCode.BadRequest,
-                new
-                {
-                    title = "Validation Error",
-                    status = (int)HttpStatusCode.BadRequest,
-                    errors = validationEx.Errors
-                } as object
-            ),
-            NotFoundException => (
-                HttpStatusCode.NotFound,
-                new
-                {
-                    title = "Not Found",
-                    status = (int)HttpStatusCode.NotFound,
-                    detail = exception.Message
-                } as object
-            ),
-            _ => (
-                HttpStatusCode.InternalServerError,
-                new
-                {
-                    title = "Server Error",
-                    status = (int)HttpStatusCode.InternalServerError,
-                    detail = "An unexpected error occurred."
-                } as object
-            )
-        };
+            logger.LogError(ex, "Exception occurred after the response had started.");
+            return;
+        }
 
-        context.Response.StatusCode = (int)statusCode;
+        ProblemDetails problem;
 
-        var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
+        if (ex is AppException appEx)
+        {
+            // Expected exception -> not a system error
+            logger.LogWarning("Handled {AppExCode} ({AppExStatusCode}): {AppExMessage}",
+                               appEx.Code, appEx.StatusCode, appEx.Message);
+
+            problem = new ProblemDetails
+            {
+                Status = appEx.StatusCode,
+                Title = GetTitle(appEx.StatusCode),
+                Detail = appEx.Message,
+                Extensions =
+                {
+                    ["code"] = appEx.Code
+                }
+            };
+
+            // more than one exception
+            if (appEx is ValidationException validationEx)
+            {
+                problem.Extensions["errors"] = validationEx.Errors;
+            }
+        }
+        else
+        {
+            // Unexpected exception -> log everything, hide details from client
+            logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
+
+            problem = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = GetTitle(StatusCodes.Status500InternalServerError),
+                Detail = "An unexpected error occurred. Please try again later.",
+                Extensions =
+                {
+                    ["code"] = "INTERNAL_ERROR"
+                }
+            };
+        }
+
+        problem.Instance = context.Request.Path;
+        problem.Extensions["traceId"] = context.TraceIdentifier;
+
+        context.Response.StatusCode = problem.Status!.Value;
+        await context.Response.WriteAsJsonAsync(
+            problem,
+            options: null,
+            contentType: "application/problem+json");
     }
+
+    private static string GetTitle(int statusCode) => statusCode switch
+    {
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        403 => "Forbidden",
+        404 => "Not Found",
+        409 => "Conflict",
+        422 => "Unprocessable Entity",
+        _ => "Server Error"
+    };
 }
