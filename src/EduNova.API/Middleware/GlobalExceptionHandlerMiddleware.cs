@@ -1,3 +1,4 @@
+using EduNova.API.Common;
 using EduNova.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,42 +46,15 @@ public class GlobalExceptionHandlerMiddleware(
             logger.LogWarning("Handled {AppExCode} ({AppExStatusCode}): {AppExMessage}",
                                appEx.Code, appEx.StatusCode, appEx.Message);
 
-            problem = new ProblemDetails
-            {
-                Status = appEx.StatusCode,
-                Title = GetTitle(appEx.StatusCode),
-                Detail = appEx.Message,
-                Extensions =
-                {
-                    ["code"] = appEx.Code
-                }
-            };
-
-            // more than one exception
-            if (appEx is ValidationException validationEx)
-            {
-                problem.Extensions["errors"] = validationEx.Errors;
-            }
+            problem = ApiProblem.FromAppException(appEx, context);
         }
         else
         {
             // Unexpected exception -> log everything, hide details from client
             logger.LogError(ex, "An unhandled exception occurred: {Message}", ex.Message);
 
-            problem = new ProblemDetails
-            {
-                Status = StatusCodes.Status500InternalServerError,
-                Title = GetTitle(StatusCodes.Status500InternalServerError),
-                Detail = "An unexpected error occurred. Please try again later.",
-                Extensions =
-                {
-                    ["code"] = "INTERNAL_ERROR"
-                }
-            };
+            problem = ApiProblem.Unexpected(context);
         }
-
-        problem.Instance = context.Request.Path;
-        problem.Extensions["traceId"] = context.TraceIdentifier;
 
         context.Response.StatusCode = problem.Status!.Value;
         await context.Response.WriteAsJsonAsync(
@@ -88,15 +62,4 @@ public class GlobalExceptionHandlerMiddleware(
             options: null,
             contentType: "application/problem+json");
     }
-
-    private static string GetTitle(int statusCode) => statusCode switch
-    {
-        400 => "Bad Request",
-        401 => "Unauthorized",
-        403 => "Forbidden",
-        404 => "Not Found",
-        409 => "Conflict",
-        422 => "Unprocessable Entity",
-        _ => "Server Error"
-    };
 }
