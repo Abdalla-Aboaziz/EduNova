@@ -14,5 +14,8 @@ public interface IApplicationDbContext
     DbSet<MyListItem> MyListItems { get; }
     DbSet<DownloadedLecture> DownloadedLectures { get; }
     DbSet<UploadedFiles> Files { get; }
+
+    DbSet<Meeting> Meetings { get; }
+    DbSet<MeetingParticipant> MeetingParticipants { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
