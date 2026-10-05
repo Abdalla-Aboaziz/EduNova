@@ -31,4 +31,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<DownloadedLecture> DownloadedLectures => Set<DownloadedLecture>();
 
     public DbSet<UploadedFiles> Files => Set<UploadedFiles>();
+
+    public DbSet<Year> Years => Set<Year>();
+    public DbSet<Semester> Semesters => Set<Semester>();
+    public DbSet<Subject> Subjects => Set<Subject>();
+    public DbSet<Instructor> Instructors => Set<Instructor>();
+    public DbSet<Offer> Offers => Set<Offer>();
 }

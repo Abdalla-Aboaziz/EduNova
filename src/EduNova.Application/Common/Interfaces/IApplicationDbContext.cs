@@ -14,5 +14,12 @@ public interface IApplicationDbContext
     DbSet<MyListItem> MyListItems { get; }
     DbSet<DownloadedLecture> DownloadedLectures { get; }
     DbSet<UploadedFiles> Files { get; }
+
+    DbSet<Year> Years { get; }
+    DbSet<Semester> Semesters { get; }
+    DbSet<Subject> Subjects { get; }
+    DbSet<Instructor> Instructors { get; }
+    DbSet<Offer> Offers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
