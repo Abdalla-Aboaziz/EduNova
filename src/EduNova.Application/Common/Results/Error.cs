@@ -30,7 +30,9 @@ public sealed record Error(
     public static Error Failure(string code, string message)
         => new(code, message, ErrorType.Failure);
 
-    /// <summary>Aggregates per-field validation failures (same dictionary shape as ValidationException.Errors).</summary>
+    /// <summary>Aggregates per-field validation failures (same dictionary shape as ValidationException.Errors).
+    /// Code and status intentionally match the existing ValidationException so both paths
+    /// produce an identical wire response (400 / VALIDATION_ERROR).</summary>
     public static Error Validation(IDictionary<string, string[]> details)
-        => new("VALIDATION_FAILED", "One or more validation errors occurred.", ErrorType.Validation, details);
+        => new("VALIDATION_ERROR", "One or more validation errors occurred.", ErrorType.Validation, details);
 }
