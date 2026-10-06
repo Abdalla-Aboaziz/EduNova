@@ -17,5 +17,12 @@ public interface IApplicationDbContext
 
     DbSet<Meeting> Meetings { get; }
     DbSet<MeetingParticipant> MeetingParticipants { get; }
+
+    DbSet<Year> Years { get; }
+    DbSet<Semester> Semesters { get; }
+    DbSet<Subject> Subjects { get; }
+    DbSet<Instructor> Instructors { get; }
+    DbSet<Offer> Offers { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

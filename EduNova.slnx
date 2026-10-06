@@ -5,4 +5,7 @@
     <Project Path="src/EduNova.Domain/EduNova.Domain.csproj" />
     <Project Path="src/EduNova.Infrastructure/EduNova.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EduNova.UnitTests/EduNova.UnitTests.csproj" />
+  </Folder>
 </Solution>
