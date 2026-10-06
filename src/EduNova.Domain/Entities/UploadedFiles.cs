@@ -1,13 +1,12 @@
 ﻿namespace EduNova.Domain.Entities
 {
-    public sealed class UploadedFiles
+    public sealed class UploadedFiles : BaseEntity<Guid>
     {
-        public Guid Id { get; set; } = Guid.CreateVersion7();
+   
         public string FileName { get; set; } = string.Empty;
         public string StoredFileName { get; set; } = string.Empty;
         public string ContentType { get; set; } = string.Empty;
         public string FileExtension { get; set; } = string.Empty;
-
         public long FileSize { get; set; }
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
     }

@@ -1,8 +1,8 @@
 ﻿namespace EduNova.Domain.Entities
 {
-    public sealed class DownloadedLecture
+    public sealed class DownloadedLecture : BaseEntity<Guid>
     {
-        public Guid Id { get; set; } = Guid.CreateVersion7();
+       
         public string UserId { get; set; }
         public Guid LectureId { get; set; }
         public DateTime DownloadedAt { get; set; } = DateTime.UtcNow;
