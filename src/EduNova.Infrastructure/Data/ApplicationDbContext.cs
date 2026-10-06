@@ -9,13 +9,9 @@ namespace EduNova.Infrastructure.Data;
 /// Implements IApplicationDbContext so the Application layer can use it
 /// via dependency injection without referencing Infrastructure directly.
 /// </summary>
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : DbContext(options), IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-
     // Add your DbSet<TEntity> properties here as you create domain entities.
     // Example: public DbSet<Course> Courses => Set<Course>();
 
@@ -31,7 +27,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<DownloadedLecture> DownloadedLectures => Set<DownloadedLecture>();
 
     public DbSet<UploadedFiles> Files => Set<UploadedFiles>();
-
-    public DbSet<Meeting> Meetings => Set<Meeting>();
-    public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
+    public DbSet<Meeting> Meetings { get; }
+    public DbSet<MeetingParticipant> MeetingParticipants { get; }
 }
