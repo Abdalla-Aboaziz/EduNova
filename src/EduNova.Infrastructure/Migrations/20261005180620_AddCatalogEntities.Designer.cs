@@ -4,6 +4,7 @@ using EduNova.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNova.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005180620_AddCatalogEntities")]
+    partial class AddCatalogEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,90 +135,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.HasIndex("SubjectId", "Order");
 
                     b.ToTable("Lectures");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Meeting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVideoMeeting")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JoinCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("RoomId")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JoinCode")
-                        .IsUnique();
-
-                    b.ToTable("Meetings", (string)null);
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.MeetingParticipant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("JoinedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LeftAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("MeetingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MeetingId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("MeetingParticipants", (string)null);
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.MyListItem", b =>
@@ -449,17 +368,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.Navigation("VideoFile");
                 });
 
-            modelBuilder.Entity("EduNova.Domain.Entities.MeetingParticipant", b =>
-                {
-                    b.HasOne("EduNova.Domain.Entities.Meeting", "Meeting")
-                        .WithMany("Participants")
-                        .HasForeignKey("MeetingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Meeting");
-                });
-
             modelBuilder.Entity("EduNova.Domain.Entities.MyListItem", b =>
                 {
                     b.HasOne("EduNova.Domain.Entities.Lecture", "Lecture")
@@ -538,11 +446,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.Navigation("DownloadedLectures");
 
                     b.Navigation("MyListItems");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Meeting", b =>
-                {
-                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.Subject", b =>

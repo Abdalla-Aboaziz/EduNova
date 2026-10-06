@@ -2,6 +2,8 @@ using EduNova.API;
 using EduNova.Application;
 using EduNova.Domain;
 using EduNova.Infrastructure;
+using EduNova.Infrastructure.Data;
+using EduNova.Infrastructure.Data.Seed;
 using Serilog;
 
 // ── Bootstrap Serilog ───────────────────────────────────────────────────
@@ -35,6 +37,17 @@ try
         .AddApiServices();
 
     var app = builder.Build();
+
+    // ── Seed demo data ──────────────────────────────────────────────────
+    // Development only: fills the catalog tables once and exits early when
+    // data already exists (idempotent). Run migrations before starting.
+    if (app.Environment.IsDevelopment())
+    {
+        using var seedScope = app.Services.CreateScope();
+        await DbSeeder.SeedAsync(
+            seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>(),
+            seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder"));
+    }
 
     // ── Serilog request logging ─────────────────────────────────────────
     // Writes one summary line per HTTP request (method, path, status, duration).

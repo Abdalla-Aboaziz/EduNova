@@ -143,7 +143,59 @@ return Result.Success(page);
 
 ---
 
-## 4) Entities جديدة
+## 4) Specifications — بتوصف "إيه" من غير "إزاي"
+
+الـ Specification بتوصف **إيه** الداتا المطلوبة (فلترة / بحث / includes / ترتيب) — **ولا حرف منها** عن الـ paging. الـ Skip/Take فضلوا حصراً في `ToPagedResultAsync`.
+
+**الـ flow الثابت:**
+```
+Request → Specification → IQueryable → ToPagedResultAsync(PagedRequest) → PagedResult
+```
+
+**الأساس في `Application/Common/Specifications/`:** `ISpecification<T>` + `Specification<T>` بـ:
+- `Where(expr)` — الشروط (بتتركب بـ AND)
+- `OrderBy(expr, desc)` / `ThenBy(expr, desc)` — أول نداء OrderBy والباقي ThenBy
+- `Include(expr)` — أول مستوى navigation (ومش محتاجه لو هتعمل `Select` بعده — EF بيتجاهل الـ includes مع الـ projection)
+- ❌ **ممنوع جوه الـ Specification:** Skip / Take / حسابات الصفحات — فيه unit test بيمسك أي حد يخالف ده بنيوياً
+
+**مثال — Query متعدد الصفحات من أول لآخره:**
+
+```csharp
+// 1) Specification — Features/{Module}/Specifications/
+public sealed class SubjectSearchSpecification : Specification<Subject>
+{
+    public SubjectSearchSpecification(string? search, Guid? yearId, Guid? semesterId)
+    {
+        if (yearId is not null)      Where(s => s.YearId == yearId);
+        if (semesterId is not null)  Where(s => s.SemesterId == semesterId);
+        if (!string.IsNullOrWhiteSpace(search))
+            Where(s => s.Name.Contains(search) || s.Code.Contains(search));
+
+        OrderBy(s => s.Name);   // ← لازم ترتيب لو الناتج هيتصفح (صفحات ثابتة)
+    }
+}
+```
+
+```csharp
+// 2) الـ Handler — يطبّق الـ spec ثم الـ projection ثم الـ paging
+var spec = new SubjectSearchSpecification(request.Search, request.YearId, request.SemesterId);
+
+var page = await spec.ApplyTo(context.Subjects.AsNoTracking())
+    .Select(s => new SubjectListItemResponse(s.Id, s.Code, s.Name))   // projection (بغنى عن Include)
+    .ToPagedResultAsync(request, cancellationToken);
+
+return Result.Success(page);
+```
+
+**القواعد:**
+1. الـ spec اللي ناتجها هيتصفح **لازم** يحدد `OrderBy` — صفحات من غير ترتيب مش مضمونة الثبات.
+2. `TotalCount` بيطلع تلقائياً = عدد النتائج **بعد الفلترة وقبل الـ paging** (مثال: 157 نتيجة مطابقة و page=2 و pageSize=10 → `TotalCount=157, TotalPages=16, Items 11-20`).
+3. الـ validators بتاعة الـ queries المتصفحة بتفضل تسحب قواعد الـ paging بـ `Include(new PagedRequestValidator())` زي ما هي.
+4. الـ specs بتاعة كل موديول تعيش في `Features/{Module}/Specifications/` — والأساس في Common ملك للجميع.
+
+---
+
+## 5) Entities جديدة
 
 ```csharp
 // Guid key + Guid v7 يتبني أوتوماتيك + CreatedAt/UpdatedAt — كل اللي محتاجه
@@ -161,7 +213,7 @@ var book = new Book { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), T
 
 ---
 
-## 5) مرجع سريع لكل نوع خطأ
+## 6) مرجع سريع لكل نوع خطأ
 
 | `ErrorType` | HTTP | امتى |
 |---|---|---|
