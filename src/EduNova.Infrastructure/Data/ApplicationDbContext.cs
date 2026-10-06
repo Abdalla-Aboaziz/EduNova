@@ -37,4 +37,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Subject> Subjects => Set<Subject>();
     public DbSet<Instructor> Instructors => Set<Instructor>();
     public DbSet<Offer> Offers => Set<Offer>();
+    public DbSet<Meeting> Meetings => Set<Meeting>();
+    public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
 }
