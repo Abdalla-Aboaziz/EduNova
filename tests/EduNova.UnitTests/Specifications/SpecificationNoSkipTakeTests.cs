@@ -53,6 +53,14 @@ public class SpecificationNoSkipTakeTests
         AssertNoSkipOrTake(spec.ApplyTo(Enumerable.Empty<Subject>().AsQueryable()));
     }
 
+    [Fact]
+    public void Instructor_by_id_specification_never_applies_skip_or_take()
+    {
+        var spec = new InstructorByIdSpecification(Guid.NewGuid());
+
+        AssertNoSkipOrTake(spec.ApplyTo(Enumerable.Empty<Instructor>().AsQueryable()));
+    }
+
     private static void AssertNoSkipOrTake<T>(IQueryable<T> query) =>
         Assert.False(
             ContainsSkipOrTake(query.Expression),

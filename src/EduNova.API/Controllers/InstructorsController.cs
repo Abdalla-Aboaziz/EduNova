@@ -20,5 +20,18 @@ namespace EduNova.API.Controllers
         [HttpGet]
         public async Task<IActionResult> List([FromQuery] GetInstructorsQuery query, CancellationToken cancellationToken)
             => (await _mediator.Send(query, cancellationToken)).ToActionResult(this);
+
+        /// <summary>
+        /// Instructor details for the Dr. Details screen; yearId/semesterId
+        /// narrow the subjects list (404 when unknown).
+        /// </summary>
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(
+            [FromRoute] Guid id,
+            [FromQuery] Guid? yearId,
+            [FromQuery] Guid? semesterId,
+            CancellationToken cancellationToken)
+            => (await _mediator.Send(new GetInstructorByIdQuery(id, yearId, semesterId), cancellationToken))
+                .ToActionResult(this);
     }
 }
