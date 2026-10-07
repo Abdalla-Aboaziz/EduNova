@@ -107,6 +107,20 @@ public class GradeCalculatorTests
     [Fact]
     public void Gpa_is_null_when_there_are_no_courses()
     {
-        Assert.Null(GradeCalculator.CalculateGpa([]));
+        // Explicit element type — an empty collection expression alone is
+        // ambiguous between the two CalculateGpa overloads.
+        Assert.Null(GradeCalculator.CalculateGpa(Array.Empty<(decimal GradePoint, int CreditHours)>()));
+    }
+
+    [Fact]
+    public void Gpa_overload_converts_raw_scores_before_weighting()
+    {
+        var gpa = GradeCalculator.CalculateGpa(
+        [
+            (Score: 27m, MaxScore: 30m, CreditHours: 2),   // 90% -> A+ -> 4.0
+            (Score: 24m, MaxScore: 30m, CreditHours: 3),   // 80% -> B+ -> 3.3
+        ]);
+
+        Assert.Equal(3.58m, gpa);   // (4.0×2 + 3.3×3) / 5
     }
 }

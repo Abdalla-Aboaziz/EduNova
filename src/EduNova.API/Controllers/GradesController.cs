@@ -27,5 +27,10 @@ namespace EduNova.API.Controllers
             CancellationToken cancellationToken)
             => (await _mediator.Send(new GetGradeSheetQuery(yearId, semesterId), cancellationToken))
                 .ToActionResult(this);
+
+        /// <summary>Chart data (GPA trend + letter distribution) for the current student.</summary>
+        [HttpGet("chart")]
+        public async Task<IActionResult> Chart(CancellationToken cancellationToken)
+            => (await _mediator.Send(new GetGradeChartQuery(), cancellationToken)).ToActionResult(this);
     }
 }

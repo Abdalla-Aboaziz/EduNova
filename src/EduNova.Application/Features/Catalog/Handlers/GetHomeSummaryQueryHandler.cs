@@ -3,6 +3,7 @@ using EduNova.Application.Common.Results;
 using EduNova.Application.Features.Catalog.Queries;
 using EduNova.Application.Features.Catalog.Responses;
 using EduNova.Application.Features.Catalog.Specifications;
+using EduNova.Application.Features.Grades;
 using EduNova.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -54,10 +55,19 @@ namespace EduNova.Application.Features.Catalog.Handlers
                     context.Lectures.Count(l => l.SubjectId == s.Id)))
                 .ToListAsync(cancellationToken);
 
+            // Overall GPA from the student's grades — null while they have none.
+            var gradeRows = await context.Grades
+                .AsNoTracking()
+                .Where(g => g.StudentId == studentId)
+                .Select(g => new { g.Score, g.MaxScore, g.Subject.CreditHours })
+                .ToListAsync(cancellationToken);
+            var gpa = GradeCalculator.CalculateGpa(
+                gradeRows.Select(r => (r.Score, r.MaxScore, r.CreditHours)));
+
             return Result.Success(new HomeSummaryResponse(
                 new HomeYearResponse(currentTerm.YearId, currentTerm.YearName),
                 new HomeSemesterResponse(currentTerm.Id, currentTerm.Name),
-                new HomeStudentResponse(studentId, FirstName(fullName), fullName, Gpa: null), // GPA lands with T4.4
+                new HomeStudentResponse(studentId, FirstName(fullName), fullName, Gpa: gpa),
                 subjects));
         }
 

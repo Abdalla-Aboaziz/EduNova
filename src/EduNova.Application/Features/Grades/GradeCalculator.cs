@@ -50,6 +50,10 @@ namespace EduNova.Application.Features.Grades
             return Math.Round(weightedSum / totalHours, 2, MidpointRounding.AwayFromZero);
         }
 
+        /// <summary>Convenience overload: converts raw scores to grade points first, then weights.</summary>
+        public static decimal? CalculateGpa(IEnumerable<(decimal Score, decimal MaxScore, int CreditHours)> grades) =>
+            CalculateGpa(grades.Select(g => (ToGradePoint(ToPercent(g.Score, g.MaxScore)), g.CreditHours)));
+
         private static (decimal MinPercent, string Letter, decimal GradePoint) BandFor(decimal percent) =>
             Scale.First(band => percent >= band.MinPercent);
     }
