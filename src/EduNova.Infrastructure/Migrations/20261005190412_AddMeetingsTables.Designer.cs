@@ -4,6 +4,7 @@ using EduNova.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNova.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005190412_AddMeetingsTables")]
+    partial class AddMeetingsTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,45 +49,6 @@ namespace EduNova.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("DownloadedLectures");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Instructor", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AcademicTitle")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Bio")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Instructors");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.Lecture", b =>
@@ -244,117 +208,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.ToTable("MyListItems");
                 });
 
-            modelBuilder.Entity("EduNova.Domain.Entities.Offer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("InstructorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SemesterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InstructorId");
-
-                    b.HasIndex("SemesterId");
-
-                    b.HasIndex("SubjectId", "InstructorId", "SemesterId")
-                        .IsUnique();
-
-                    b.ToTable("Offers");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Semester", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("YearId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("YearId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("Semesters");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Subject", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreditHours")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<Guid>("SemesterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("YearId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("SemesterId");
-
-                    b.HasIndex("YearId");
-
-                    b.ToTable("Subjects");
-                });
-
             modelBuilder.Entity("EduNova.Domain.Entities.UploadedFiles", b =>
                 {
                     b.Property<Guid>("Id")
@@ -390,34 +243,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UploadedFiles", (string)null);
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Year", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Number")
-                        .IsUnique();
-
-                    b.ToTable("Years");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.DownloadedLecture", b =>
@@ -471,68 +296,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.Navigation("Lecture");
                 });
 
-            modelBuilder.Entity("EduNova.Domain.Entities.Offer", b =>
-                {
-                    b.HasOne("EduNova.Domain.Entities.Instructor", "Instructor")
-                        .WithMany("Offers")
-                        .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EduNova.Domain.Entities.Semester", "Semester")
-                        .WithMany()
-                        .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EduNova.Domain.Entities.Subject", "Subject")
-                        .WithMany("Offers")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Instructor");
-
-                    b.Navigation("Semester");
-
-                    b.Navigation("Subject");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Semester", b =>
-                {
-                    b.HasOne("EduNova.Domain.Entities.Year", "Year")
-                        .WithMany("Semesters")
-                        .HasForeignKey("YearId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Year");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Subject", b =>
-                {
-                    b.HasOne("EduNova.Domain.Entities.Semester", "Semester")
-                        .WithMany()
-                        .HasForeignKey("SemesterId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EduNova.Domain.Entities.Year", "Year")
-                        .WithMany()
-                        .HasForeignKey("YearId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Semester");
-
-                    b.Navigation("Year");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Instructor", b =>
-                {
-                    b.Navigation("Offers");
-                });
-
             modelBuilder.Entity("EduNova.Domain.Entities.Lecture", b =>
                 {
                     b.Navigation("DownloadedLectures");
@@ -540,14 +303,6 @@ namespace EduNova.Infrastructure.Migrations
                     b.Navigation("MyListItems");
                 });
 
-            modelBuilder.Entity("EduNova.Domain.Entities.Subject", b =>
-                {
-                    b.Navigation("Offers");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Year", b =>
-                {
-                    b.Navigation("Semesters");
             modelBuilder.Entity("EduNova.Domain.Entities.Meeting", b =>
                 {
                     b.Navigation("Participants");
