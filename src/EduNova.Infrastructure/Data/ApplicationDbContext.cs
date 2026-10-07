@@ -28,9 +28,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<UploadedFiles> Files => Set<UploadedFiles>();
 
-    public DbSet<Meeting> Meetings => Set<Meeting>();
-    public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
-
     public DbSet<Year> Years => Set<Year>();
     public DbSet<Semester> Semesters => Set<Semester>();
     public DbSet<Subject> Subjects => Set<Subject>();
