@@ -5,14 +5,15 @@ namespace EduNova.UnitTests.Grades;
 
 /// <summary>
 /// Grade scale edge cases (T4.2 DoD): band boundaries, the score/max to
-/// percent conversion and weighted GPA math.
+/// percent conversion and weighted GPA math. Expectations follow the
+/// faculty scale in GradeCalculator.Scale (A+ at 90, D at 50, no E band).
 /// </summary>
 public class GradeCalculatorTests
 {
     [Theory]
-    [InlineData(90, "A")]
-    [InlineData(89.99, "A-")]
-    [InlineData(85, "A-")]
+    [InlineData(90, "A+")]
+    [InlineData(89.99, "A")]
+    [InlineData(85, "A")]
     [InlineData(84.99, "B+")]
     [InlineData(80, "B+")]
     [InlineData(79.99, "B")]
@@ -21,10 +22,10 @@ public class GradeCalculatorTests
     [InlineData(70, "C+")]
     [InlineData(69.99, "C")]
     [InlineData(65, "C")]
-    [InlineData(64.99, "D")]
-    [InlineData(60, "D")]
-    [InlineData(59.99, "E")]
-    [InlineData(50, "E")]
+    [InlineData(64.99, "D+")]
+    [InlineData(60, "D+")]
+    [InlineData(59.99, "D")]
+    [InlineData(50, "D")]
     [InlineData(49.99, "F")]
     [InlineData(0, "F")]
     public void ToLetter_maps_band_boundaries_exactly(double percent, string expectedLetter)
@@ -33,14 +34,14 @@ public class GradeCalculatorTests
     }
 
     [Theory]
-    [InlineData(92, "A", 4.0)]
-    [InlineData(87, "A-", 3.7)]
+    [InlineData(92, "A+", 4.0)]
+    [InlineData(87, "A", 3.7)]
     [InlineData(82, "B+", 3.3)]
     [InlineData(77, "B", 3.0)]
     [InlineData(72, "C+", 2.7)]
     [InlineData(67, "C", 2.3)]
-    [InlineData(62, "D", 2.0)]
-    [InlineData(55, "E", 1.0)]
+    [InlineData(62, "D+", 2.0)]
+    [InlineData(55, "D", 1.0)]
     [InlineData(30, "F", 0.0)]
     public void Letter_and_grade_point_come_from_the_same_band(
         double percent, string expectedLetter, double expectedPoint)
@@ -71,7 +72,7 @@ public class GradeCalculatorTests
     {
         var gpa = GradeCalculator.CalculateGpa(
         [
-            (GradePoint: 4.0m, CreditHours: 4),   // A in a heavy course
+            (GradePoint: 4.0m, CreditHours: 4),   // A+ in a heavy course
             (GradePoint: 3.0m, CreditHours: 1),   // B in a light one
         ]);
 
