@@ -5,10 +5,11 @@ using Microsoft.Extensions.Logging;
 namespace EduNova.Infrastructure.Data.Seed;
 
 /// <summary>
-/// Fills the catalog tables with demo data on first run (Development only).
-/// Ids are deterministic so every team member gets the same rows and later
-/// seed steps (Grades) can reference them. Idempotent: exits when catalog
-/// data already exists. Run migrations before starting the app.
+/// Fills the demo data (catalog + grades) on first run (Development only).
+/// Ids are deterministic so every team member gets the same rows. Idempotent
+/// per block: the catalog seeds when Years is empty, grades seed when Grades
+/// is empty — so databases seeded before the grades step pick them up on the
+/// next run. Run migrations before starting the app.
 /// </summary>
 public static class DbSeeder
 {
@@ -19,6 +20,12 @@ public static class DbSeeder
     private static Guid Id(int n) => new($"00000000-0000-0000-0000-{n:D12}");
 
     public static async Task SeedAsync(ApplicationDbContext db, ILogger logger)
+    {
+        await SeedCatalogAsync(db, logger);
+        await SeedGradesAsync(db, logger);
+    }
+
+    private static async Task SeedCatalogAsync(ApplicationDbContext db, ILogger logger)
     {
         if (await db.Years.AnyAsync())
         {
@@ -140,4 +147,63 @@ public static class DbSeeder
             "Seeded catalog demo data: {Years} years, {Semesters} semesters, {Subjects} subjects, {Instructors} instructors, {Offers} offers.",
             years.Count, semesters.Count, subjects.Count, instructors.Count, offers.Count);
     }
+
+    /// <summary>
+    /// Demo transcript for the demo student — MUST match EduNova:DemoStudentId
+    /// in appsettings. Six graded terms (Y1S1..Y3S2) with a rising trend;
+    /// the current term (Year 4 - Semester 1) stays without grades — the
+    /// student is studying it now.
+    /// </summary>
+    private static async Task SeedGradesAsync(ApplicationDbContext db, ILogger logger)
+    {
+        if (await db.Grades.AnyAsync())
+        {
+            logger.LogDebug("Seed skipped — grade data already present.");
+            return;
+        }
+
+        const string studentId = "demo-student-1";
+        var grades = new List<Grade>
+        {
+            // Year 1 — Semester 1 (exams Jan 2024)
+            G(studentId, 21, 51, 21m,   Exam(2024, 1, 20)),   // English  70% -> C+
+            G(studentId, 22, 52, 22.5m, Exam(2024, 1, 20)),   // Arabic   75% -> B
+            G(studentId, 23, 53, 25.5m, Exam(2024, 1, 20)),   // Math     85% -> A
+            // Year 1 — Semester 2 (exams Jun 2024)
+            G(studentId, 24, 54, 24m,   Exam(2024, 6, 15)),   // Physics   80% -> B+
+            G(studentId, 25, 55, 24.9m, Exam(2024, 6, 15)),   // Chemistry 83% -> B+
+            // Year 2 — Semester 1 (exams Jan 2025)
+            G(studentId, 26, 56, 25.5m, Exam(2025, 1, 18)),   // Data Structures 85% -> A
+            G(studentId, 27, 57, 25.5m, Exam(2025, 1, 18)),   // OOP             85% -> A
+            G(studentId, 28, 58, 24m,   Exam(2025, 1, 18)),   // Statistics      80% -> B+
+            // Year 2 — Semester 2 (exams Jun 2025)
+            G(studentId, 29, 59, 27m,   Exam(2025, 6, 14)),   // Databases         90% -> A+
+            G(studentId, 30, 60, 24.9m, Exam(2025, 6, 14)),   // Technical Writing 83% -> B+
+            // Year 3 — Semester 1 (exams Jan 2026)
+            G(studentId, 31, 61, 27m,   Exam(2026, 1, 17)),   // Software Engineering 90% -> A+
+            G(studentId, 32, 62, 25.5m, Exam(2026, 1, 17)),   // Operating Systems    85% -> A
+            // Year 3 — Semester 2 (exams Jun 2026)
+            G(studentId, 33, 63, 27m,   Exam(2026, 6, 13)),   // Computer Networks 90% -> A+
+            G(studentId, 34, 64, 26.1m, Exam(2026, 6, 13)),   // Web Development   87% -> A
+        };
+
+        db.Grades.AddRange(grades);
+        await db.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {Count} demo grades for {Student}.", grades.Count, studentId);
+    }
+
+    private static Grade G(string studentId, int subjectNum, int offerNum, decimal score, DateTime examAt) =>
+        new()
+        {
+            StudentId = studentId,
+            SubjectId = Id(subjectNum),
+            OfferId = Id(offerNum),
+            Score = score,
+            MaxScore = 30m,
+            ExamAt = examAt
+        };
+
+    private static DateTime Exam(int year, int month, int day) =>
+        new(year, month, day, 10, 0, 0, DateTimeKind.Utc);
 }
