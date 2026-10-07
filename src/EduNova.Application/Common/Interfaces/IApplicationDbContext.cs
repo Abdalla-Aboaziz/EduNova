@@ -20,6 +20,7 @@ public interface IApplicationDbContext
     DbSet<Subject> Subjects { get; }
     DbSet<Instructor> Instructors { get; }
     DbSet<Offer> Offers { get; }
+    DbSet<Grade> Grades { get; }
 
     DbSet<Meeting> Meetings { get; }
     DbSet<MeetingParticipant> MeetingParticipants { get; }
