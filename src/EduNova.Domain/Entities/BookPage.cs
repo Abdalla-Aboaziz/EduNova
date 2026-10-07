@@ -2,7 +2,7 @@ namespace EduNova.Domain.Entities;
 
 public class BookPage : BaseEntity<int>
 {
-    public int BookId { get; set; }
+    public Guid BookId { get; set; }
     public Book Book { get; set; } = null!;
 
     public int PageNumber { get; set; }
