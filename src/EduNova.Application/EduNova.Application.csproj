@@ -17,6 +17,17 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Book\DTOs\" />
+    <Folder Include="Features\Book\Queries\" />
+    <Folder Include="Features\Note\Command\" />
+    <Folder Include="Features\Note\DTOs\" />
+    <Folder Include="Features\Note\Queries\" />
+    <Folder Include="Features\Profile\Command\" />
+    <Folder Include="Features\Profile\DTOs\" />
+    <Folder Include="Features\Profile\Queries\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

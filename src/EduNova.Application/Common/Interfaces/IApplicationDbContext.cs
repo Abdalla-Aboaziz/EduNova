@@ -15,14 +15,15 @@ public interface IApplicationDbContext
     DbSet<DownloadedLecture> DownloadedLectures { get; }
     DbSet<UploadedFiles> Files { get; }
 
+=========
     DbSet<Year> Years { get; }
     DbSet<Semester> Semesters { get; }
     DbSet<Subject> Subjects { get; }
     DbSet<Instructor> Instructors { get; }
     DbSet<Offer> Offers { get; }
     DbSet<Grade> Grades { get; }
-
     DbSet<Meeting> Meetings { get; }
     DbSet<MeetingParticipant> MeetingParticipants { get; }
+>>>>>>>>> Temporary merge branch 2
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

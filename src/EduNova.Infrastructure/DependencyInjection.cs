@@ -1,10 +1,15 @@
+using EduNova.Application.Common.Caching;
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Contracts;
 using EduNova.Application.Interfaces;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Files;
+using EduNova.Infrastructure.Repositories;
+using EduNova.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace EduNova.Infrastructure;
 
@@ -29,10 +34,21 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
 
+        // Register Redis
+        var redisConnection = configuration.GetConnectionString("Redis")
+            ?? throw new InvalidOperationException(
+                "Redis connection string is not configured.");
+
+        services.AddSingleton<IConnectionMultiplexer>(
+            ConnectionMultiplexer.Connect(redisConnection));
 
         // Register additional infrastructure services here
         // Example: services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileService, FileService>();
+
+        // register services in DI 
+        services.AddScoped<ICacheRepository, CacheRepository>();
+        services.AddScoped<ICacheService, CacheService>();
         return services;
     }
 }

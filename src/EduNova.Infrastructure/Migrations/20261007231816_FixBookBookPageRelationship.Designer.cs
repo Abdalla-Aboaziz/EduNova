@@ -4,6 +4,7 @@ using EduNova.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduNova.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261007231816_FixBookBookPageRelationship")]
+    partial class FixBookBookPageRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,52 +121,6 @@ namespace EduNova.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("DownloadedLectures");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Grade", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExamAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("MaxScore")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<Guid?>("OfferId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Score")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("SubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OfferId");
-
-                    b.HasIndex("SubjectId");
-
-                    b.HasIndex("StudentId", "SubjectId")
-                        .IsUnique();
-
-                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.Instructor", b =>
@@ -612,24 +569,6 @@ namespace EduNova.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Lecture");
-                });
-
-            modelBuilder.Entity("EduNova.Domain.Entities.Grade", b =>
-                {
-                    b.HasOne("EduNova.Domain.Entities.Offer", "Offer")
-                        .WithMany()
-                        .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("EduNova.Domain.Entities.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Offer");
-
-                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("EduNova.Domain.Entities.Lecture", b =>
