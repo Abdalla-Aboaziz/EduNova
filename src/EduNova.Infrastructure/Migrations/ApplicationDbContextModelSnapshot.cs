@@ -553,6 +553,9 @@ namespace EduNova.Infrastructure.Migrations
             modelBuilder.Entity("EduNova.Domain.Entities.Year", b =>
                 {
                     b.Navigation("Semesters");
+            modelBuilder.Entity("EduNova.Domain.Entities.Meeting", b =>
+                {
+                    b.Navigation("Participants");
                 });
 #pragma warning restore 612, 618
         }
