@@ -14,7 +14,8 @@ public interface IApplicationDbContext
     DbSet<MyListItem> MyListItems { get; }
     DbSet<DownloadedLecture> DownloadedLectures { get; }
     DbSet<UploadedFiles> Files { get; }
-
+    DbSet<Note> Notes { get; }
+    DbSet<Book> Books { get; }
     DbSet<Year> Years { get; }
     DbSet<Semester> Semesters { get; }
     DbSet<Subject> Subjects { get; }

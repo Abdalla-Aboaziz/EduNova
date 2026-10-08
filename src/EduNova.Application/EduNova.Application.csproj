@@ -18,11 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Book\DTOs\" />
+    <Folder Include="Features\Book\Handlers\" />
     <Folder Include="Features\Book\Queries\" />
-    <Folder Include="Features\Note\Command\" />
-    <Folder Include="Features\Note\DTOs\" />
-    <Folder Include="Features\Note\Queries\" />
+    <Folder Include="Features\Book\Responses\" />
+    <Folder Include="Features\Book\Commands\" />
+    <Folder Include="Features\Book\Validations\" />
     <Folder Include="Features\Profile\Command\" />
     <Folder Include="Features\Profile\DTOs\" />
     <Folder Include="Features\Profile\Queries\" />

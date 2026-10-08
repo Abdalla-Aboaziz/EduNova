@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace EduNova.Infrastructure.Files
+namespace EduNova.Infrastructure.Services.Files
 {
     public class FileService(IWebHostEnvironment webHostEnvironment, ApplicationDbContext context, ILogger<FileService> logger) : IFileService
     {

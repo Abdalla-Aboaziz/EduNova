@@ -10,13 +10,14 @@ public class NoteConfiguration : IEntityTypeConfiguration<Note>
     {
         builder.Property(n => n.Title).IsRequired().HasMaxLength(150);
         builder.Property(n => n.Content).IsRequired();
-        builder.Property(n => n.Color).IsRequired().HasMaxLength(9);
+        builder.Property(n => n.Color).IsRequired();
 
         //builder.HasOne(n => n.User)
-          //  .WithMany(u => u.Notes)
-           // .HasForeignKey(n => n.UserId)
-            //.OnDelete(DeleteBehavior.Cascade);
+        //  .WithMany(u => u.Notes)
+        // .HasForeignKey(n => n.UserId)
+        //.OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(n => n.UserId);
+        builder.HasIndex(n => n.Title);
     }
 }

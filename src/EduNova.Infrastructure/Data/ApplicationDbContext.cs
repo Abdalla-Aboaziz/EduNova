@@ -23,6 +23,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(modelBuilder);
     }
     public DbSet<Lecture> Lectures => Set<Lecture>();
+    public DbSet<Note> Notes => Set<Note>();
+    public DbSet<Book> Books => Set<Book>();
     public DbSet<MyListItem> MyListItems => Set<MyListItem>();
     public DbSet<DownloadedLecture> DownloadedLectures => Set<DownloadedLecture>();
 
