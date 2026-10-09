@@ -2,12 +2,14 @@ using EduNova.API.Common;
 using EduNova.Application.Features.Attendance.Commands;
 using EduNova.Application.Features.Attendance.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AttendanceController : ControllerBase
     {
         private readonly IMediator _mediator;

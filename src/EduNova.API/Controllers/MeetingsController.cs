@@ -3,12 +3,14 @@ using EduNova.API.Common;
 using EduNova.Application.Features.Meetings.Commands;
 using EduNova.Application.Features.Meetings.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MeetingsController : ControllerBase
     {
         private readonly IMediator _mediator;

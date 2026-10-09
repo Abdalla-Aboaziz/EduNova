@@ -1,12 +1,14 @@
 using EduNova.API.Common;
 using EduNova.Application.Features.Catalog.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SubjectsController : ControllerBase
     {
         private readonly IMediator _mediator;

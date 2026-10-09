@@ -1,11 +1,13 @@
 using EduNova.Application.Features.Book.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class BooksController : ControllerBase
 {
     private readonly IMediator _mediator;

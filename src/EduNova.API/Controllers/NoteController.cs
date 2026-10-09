@@ -1,12 +1,14 @@
 ﻿using EduNova.Application.Features.Note.Command;
 using EduNova.Application.Features.Note.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NoteController : ControllerBase
     {
         private readonly IMediator _mediator;

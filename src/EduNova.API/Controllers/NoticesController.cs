@@ -1,12 +1,14 @@
 using EduNova.API.Common;
 using EduNova.Application.Features.Notices.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NoticesController : ControllerBase
     {
         private readonly IMediator _mediator;

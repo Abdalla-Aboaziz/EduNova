@@ -2,12 +2,14 @@ using EduNova.API.Common;
 using EduNova.Application.Features.Events.Commands;
 using EduNova.Application.Features.Events.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EventsController : ControllerBase
     {
         private readonly IMediator _mediator;
