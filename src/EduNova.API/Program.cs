@@ -96,11 +96,19 @@ try
 
     // ── Recurring jobs ──────────────────────────────────────────────────
     // Every minute, dispatch reminders that are due and send them as push
-    // notifications, then mark them as sent.
-    RecurringJob.AddOrUpdate<ReminderDispatchJob>(
-        "dispatch-due-reminders",
-        job => job.RunAsync(CancellationToken.None),
-        Cron.Minutely);
+    // notifications, then mark them as sent. Use the service-based API
+    // (IRecurringJobManager) so Hangfire resolves its storage from DI
+    // instead of relying on the static JobStorage.Current.
+    using (var jobScope = app.Services.CreateScope())
+    {
+        var recurringJobManager = jobScope.ServiceProvider
+            .GetRequiredService<IRecurringJobManager>();
+
+        recurringJobManager.AddOrUpdate<ReminderDispatchJob>(
+            "dispatch-due-reminders",
+            job => job.RunAsync(CancellationToken.None),
+            Cron.Minutely);
+    }
 
     // ── Seed demo data ──────────────────────────────────────────────────
     // Development only: fills the catalog tables once and exits early when
