@@ -39,4 +39,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Meeting> Meetings => Set<Meeting>();
     public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
+
+    public DbSet<Event> Events => Set<Event>();
+    public DbSet<Reminder> Reminders => Set<Reminder>();
+    public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
+    public DbSet<Notice> Notices => Set<Notice>();
+    public DbSet<DeviceToken> DeviceTokens => Set<DeviceToken>();
 }

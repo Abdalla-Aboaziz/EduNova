@@ -2,6 +2,9 @@ using EduNova.API.Hubs;
 using EduNova.API.Middleware;
 using EduNova.API.Services;
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Features.Events.Jobs;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EduNova.API;
@@ -24,6 +27,22 @@ public static class DependencyInjection
             .AddStackExchangeRedis(configuration.GetConnectionString("Redis")!);
 
         services.AddSignalRJwtSupport();
+
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("EduNova"), new SqlServerStorageOptions
+            {
+                CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                QueuePollInterval = TimeSpan.Zero,
+                UseRecommendedIsolationLevel = true,
+                DisableGlobalLocks = true
+            }));
+
+        services.AddHangfireServer();
+        services.AddScoped<ReminderDispatchJob>();
 
         return services;
     }
@@ -70,6 +89,8 @@ public static class DependencyInjection
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "My API v1");
             });
+
+            app.UseHangfireDashboard("/hangfire");
         }
 
         app.UseHttpsRedirection();

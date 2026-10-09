@@ -1,9 +1,11 @@
 using EduNova.API;
 using EduNova.Application;
+using EduNova.Application.Features.Events.Jobs;
 using EduNova.Domain;
 using EduNova.Infrastructure;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Data.Seed;
+using Hangfire;
 using Serilog;
 
 // ── Bootstrap Serilog ───────────────────────────────────────────────────
@@ -37,6 +39,14 @@ try
         .AddApiServices(builder.Configuration);
 
     var app = builder.Build();
+
+    // ── Recurring jobs ──────────────────────────────────────────────────
+    // Every minute, dispatch reminders that are due and send them as push
+    // notifications, then mark them as sent.
+    RecurringJob.AddOrUpdate<ReminderDispatchJob>(
+        "dispatch-due-reminders",
+        job => job.RunAsync(CancellationToken.None),
+        Cron.Minutely);
 
     // ── Seed demo data ──────────────────────────────────────────────────
     // Development only: fills the catalog tables once and exits early when
