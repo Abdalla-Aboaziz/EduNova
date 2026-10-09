@@ -10,9 +10,9 @@ namespace EduNova.Application.Features.Lecture.Handlers
     public sealed class GetLectureStreamQueryHandler(
         IApplicationDbContext context, IFileService fileService,
         ILogger<GetLectureStreamQueryHandler> logger)
-        : IRequestHandler<GetLectureStreamQuery, (FileStream? stream, string ContentType, string FileName)>
+        : IRequestHandler<GetLectureStreamQuery, (Stream? stream, string ContentType, string FileName)>
     {
-        public async Task<(FileStream? stream, string ContentType, string FileName)> Handle(
+        public async Task<(Stream? stream, string ContentType, string FileName)> Handle(
             GetLectureStreamQuery request, CancellationToken cancellationToken)
         {
             var videoFileId = await context.Lectures

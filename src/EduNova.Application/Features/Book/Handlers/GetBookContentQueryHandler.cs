@@ -11,9 +11,9 @@ public sealed class GetBookContentQueryHandler(
     IApplicationDbContext context,
     IFileService fileService,
     ILogger<GetBookContentQueryHandler> logger)
-    : IRequestHandler<GetBookContentQuery, (FileStream? stream, string ContentType, string FileName)>
+    : IRequestHandler<GetBookContentQuery, (Stream? stream, string ContentType, string FileName)>
 {
-    public async Task<(FileStream? stream, string ContentType, string FileName)> Handle(
+    public async Task<(Stream? stream, string ContentType, string FileName)> Handle(
         GetBookContentQuery request, CancellationToken cancellationToken)
     {
         var fileId = await context.Books

@@ -49,9 +49,28 @@ public static class DependencyInjection
         services.AddSingleton<IConnectionMultiplexer>(
             ConnectionMultiplexer.Connect(redisConnection));
 
-        // Register additional infrastructure services here
-        // Example: services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IFileService, FileService>();
+        // Register the file storage provider. Cloudinary is used when the
+        // FileStorage section selects it with valid credentials, otherwise
+        // uploaded files stay on the local wwwroot disk (same as before).
+        var fileStorageProvider = configuration["FileStorage:Provider"];
+        var cloudName = configuration["FileStorage:Cloudinary:CloudName"];
+        var apiKey = configuration["FileStorage:Cloudinary:ApiKey"];
+        var apiSecret = configuration["FileStorage:Cloudinary:ApiSecret"];
+
+        if (string.Equals(fileStorageProvider, "Cloudinary", StringComparison.OrdinalIgnoreCase)
+            && !string.IsNullOrWhiteSpace(cloudName)
+            && !string.IsNullOrWhiteSpace(apiKey)
+            && !string.IsNullOrWhiteSpace(apiSecret))
+        {
+            services.AddSingleton(new CloudinaryDotNet.Cloudinary(
+                new CloudinaryDotNet.Account(cloudName, apiKey, apiSecret)));
+            services.AddHttpClient<Services.Files.CloudinaryFileService>();
+            services.AddScoped<IFileService, Services.Files.CloudinaryFileService>();
+        }
+        else
+        {
+            services.AddScoped<IFileService, FileService>();
+        }
 
         // register services in DI 
         services.AddScoped<ICacheRepository, CacheRepository>();

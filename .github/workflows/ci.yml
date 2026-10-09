@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore EduNova.slnx
+
+      - name: Build
+        run: dotnet build EduNova.slnx --no-restore -clp:ErrorsOnly
+
+      - name: Test
+        run: dotnet test tests/EduNova.UnitTests/EduNova.UnitTests.csproj --no-build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker build
+        run: docker build -t edunova-api -f Dockerfile .

@@ -10,9 +10,9 @@ namespace EduNova.Application.Features.Lecture.Handlers
     public sealed class GetLectureThumbnailHandler(
         IApplicationDbContext context, IFileService fileService,
         ILogger<GetLectureThumbnailHandler> logger)
-    : IRequestHandler<GetLectureThumbnailQuery, (FileStream? Stream, string ContentType, string FileName)>
+    : IRequestHandler<GetLectureThumbnailQuery, (Stream? Stream, string ContentType, string FileName)>
     {
-        public async Task<(FileStream? Stream, string ContentType, string FileName)> Handle(
+        public async Task<(Stream? Stream, string ContentType, string FileName)> Handle(
             GetLectureThumbnailQuery request, CancellationToken cancellationToken)
         {
             var thumbnailId = await context.Lectures
