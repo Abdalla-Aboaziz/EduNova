@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddOpenApi();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<Application.Contracts.Services.IMeetingLiveNotifier, MeetingLiveNotifier>();
 
         services.AddSignalR()
             .AddStackExchangeRedis(configuration.GetConnectionString("Redis")!);

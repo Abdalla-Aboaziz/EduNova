@@ -1,5 +1,6 @@
 ﻿using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Common.Results;
+using EduNova.Application.Contracts.Services;
 using EduNova.Application.Features.Meetings.Commands;
 using EduNova.Application.Interfaces;
 using EduNova.Domain.Entities;
@@ -10,7 +11,8 @@ namespace EduNova.Application.Features.Meetings.Handlers
 {
     public sealed class JoinMeetingCommandHandler(
         IApplicationDbContext context,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IMeetingLiveNotifier liveNotifier)
         : IRequestHandler<JoinMeetingCommand, Result>
     {
         public async Task<Result> Handle(JoinMeetingCommand request, CancellationToken cancellationToken)
@@ -46,11 +48,17 @@ namespace EduNova.Application.Features.Meetings.Handlers
             {
                 Id = Guid.NewGuid(),
                 MeetingId = meeting.Id,
-                UserId = userId
+                UserId = userId,
+                JoinedAt = DateTime.UtcNow
             };
 
             context.MeetingParticipants.Add(participant);
             await context.SaveChangesAsync(cancellationToken);
+
+            await liveNotifier.MemberJoinedAsync(
+                meeting.RoomId ?? meeting.Id.ToString("N"),
+                userId,
+                cancellationToken);
 
             return Result.Success();
         }

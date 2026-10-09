@@ -9,6 +9,7 @@ using EduNova.Infrastructure.Services;
 using EduNova.Infrastructure.Services.AccountSevice;
 using EduNova.Infrastructure.Services.Files;
 using EduNova.Infrastructure.Services.Notifications;
+using EduNova.Infrastructure.Services.Video;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +84,7 @@ public static class DependencyInjection
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IProfileService, Services.ProfileService.ProfileService>();
+        services.AddScoped<IVideoTokenService, VideoTokenService>();
         return services;
     }
 }

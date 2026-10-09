@@ -54,13 +54,57 @@ namespace EduNova.API.Controllers
         #endregion
 
         #region Join
-        
+
         [HttpPost("join")]
         public async Task<IActionResult> Join([FromBody] JoinMeetingCommand command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);
             return result.ToActionResult(this);
-        } 
+        }
+
+        #endregion
+
+        #region Members
+
+        [HttpGet("{id:guid}/members")]
+        public async Task<IActionResult> Members([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetMeetingMembersQuery(id), cancellationToken);
+            return result.ToActionResult(this);
+        }
+
+        #endregion
+
+        #region Leave
+
+        [HttpPost("{id:guid}/leave")]
+        public async Task<IActionResult> Leave([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new LeaveMeetingCommand { MeetingId = id }, cancellationToken);
+            return result.ToActionResult(this);
+        }
+
+        #endregion
+
+        #region End
+
+        [HttpPost("{id:guid}/end")]
+        public async Task<IActionResult> End([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new EndMeetingCommand { MeetingId = id }, cancellationToken);
+            return result.ToActionResult(this);
+        }
+
+        #endregion
+
+        #region Video token
+
+        [HttpGet("{id:guid}/token")]
+        public async Task<IActionResult> Token([FromRoute] Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetMeetingTokenQuery(id), cancellationToken);
+            return result.ToActionResult(this);
+        }
 
         #endregion
     }

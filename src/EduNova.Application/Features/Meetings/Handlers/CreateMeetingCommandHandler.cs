@@ -18,14 +18,18 @@ namespace EduNova.Application.Features.Meetings.Handlers
             // 1. توليد كود دخول عشوائي مكون من 6 حروف وأرقام
             var joinCode = GenerateJoinCode();
 
+            var meetingId = Guid.NewGuid();
+
             var meeting = new Meeting
             {
+                Id = meetingId,
                 Title = request.Title,
                 Description = request.Description,
                 StartTime = request.StartTime,
                 IsVideoMeeting = request.IsVideoMeeting,
                 JoinCode = joinCode,
-                IsActive = true
+                IsActive = true,
+                RoomId = meetingId.ToString("N")
             };
 
             // 3. إضافة الاجتماع لقاعدة البيانات وحفظ التغييرات
