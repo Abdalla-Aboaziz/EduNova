@@ -1,6 +1,8 @@
+using EduNova.API.Hubs;
 using EduNova.API.Middleware;
 using EduNova.API.Services;
 using EduNova.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EduNova.API;
 
@@ -11,12 +13,43 @@ namespace EduNova.API;
 /// </summary>
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApiServices(this IServiceCollection services)
+    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
         services.AddOpenApi();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        services.AddSignalR()
+            .AddStackExchangeRedis(configuration.GetConnectionString("Redis")!);
+
+        services.AddSignalRJwtSupport();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSignalRJwtSupport(this IServiceCollection services)
+    {
+        services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            var events = options.Events ??= new JwtBearerEvents();
+            var existingOnMessageReceived = events.OnMessageReceived;
+
+            events.OnMessageReceived = async context =>
+            {
+                if (existingOnMessageReceived is not null)
+                {
+                    await existingOnMessageReceived(context);
+                }
+
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+            };
+        });
 
         return services;
     }
@@ -42,6 +75,7 @@ public static class DependencyInjection
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<MeetingHub>("/hubs/meetings");
 
         return app;
     }

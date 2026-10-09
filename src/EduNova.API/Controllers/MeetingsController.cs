@@ -1,4 +1,5 @@
-﻿using EduNova.API.Common;
+﻿using EduNova.API.Attributes;
+using EduNova.API.Common;
 using EduNova.Application.Features.Meetings.Commands;
 using EduNova.Application.Features.Meetings.Queries;
 using MediatR;
@@ -42,7 +43,7 @@ namespace EduNova.API.Controllers
         #region Get All
         
         [HttpGet]
-        // [RedisCache(duration: 5)] 
+        [RedisCache(duration: 5)]
         public async Task<IActionResult> GetAll([FromQuery] GetMeetingsQuery query, CancellationToken cancellationToken)
         {
             // الـ query هنا هتاخد الـ Page والـ PageSize من الـ Query String أوتوماتيك
