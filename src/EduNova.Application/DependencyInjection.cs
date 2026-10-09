@@ -6,6 +6,7 @@ using FluentValidation;
 using MapsterMapper;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using System.Reflection;
 
 namespace EduNova.Application;
@@ -39,6 +40,7 @@ public static class DependencyInjection
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
 
+        services.AddLocalization();
 
         return services;
     }

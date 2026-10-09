@@ -82,6 +82,7 @@ public static class DependencyInjection
         }
 
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IProfileService, Services.ProfileService.ProfileService>();
         return services;
     }
 }

@@ -129,9 +129,6 @@ try
 
     // ── Configure middleware pipeline ───────────────────────────────────
     app.UseApiMiddleware();
-    app.UseAuthentication();
-    app.UseAuthorization();
-
     app.Run();
 }
 catch (Exception ex) when (ex is not HostAbortedException)

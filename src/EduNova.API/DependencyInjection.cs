@@ -94,6 +94,8 @@ public static class DependencyInjection
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
         app.MapHub<MeetingHub>("/hubs/meetings");
