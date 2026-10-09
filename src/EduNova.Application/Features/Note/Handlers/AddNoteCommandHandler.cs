@@ -21,7 +21,7 @@ namespace EduNova.Application.Features.Note.Handlers
 
         public async Task<string> Handle(AddNoteCommand request, CancellationToken cancellationToken)
         {
-            var userid = "1";// ToDo  _currentUserService.UserId;
+            var userid = _currentUserService.UserId ?? string.Empty;
 
             var existNote = await _dbContext.Notes.FirstOrDefaultAsync(x => x.Title == request.Title && x.UserId == userid);
 

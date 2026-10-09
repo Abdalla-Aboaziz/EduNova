@@ -14,18 +14,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Book\Handlers\" />
-    <Folder Include="Features\Book\Queries\" />
-    <Folder Include="Features\Book\Responses\" />
-    <Folder Include="Features\Book\Commands\" />
-    <Folder Include="Features\Book\Validations\" />
-    <Folder Include="Features\Profile\Command\" />
-    <Folder Include="Features\Profile\DTOs\" />
-    <Folder Include="Features\Profile\Queries\" />
+    <Folder Include="Localization\" />
   </ItemGroup>
 
   <PropertyGroup>

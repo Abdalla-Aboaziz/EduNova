@@ -42,6 +42,12 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid> ,I
         public DbSet<Offer> Offers => Set<Offer>();
         public DbSet<Grade> Grades => Set<Grade>();
 
-        public DbSet<Meeting> Meetings => Set<Meeting>();
-        public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
-    }
+    public DbSet<Meeting> Meetings => Set<Meeting>();
+    public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
+
+    public DbSet<Event> Events => Set<Event>();
+    public DbSet<Reminder> Reminders => Set<Reminder>();
+    public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
+    public DbSet<Notice> Notices => Set<Notice>();
+    public DbSet<DeviceToken> DeviceTokens => Set<DeviceToken>();
+}

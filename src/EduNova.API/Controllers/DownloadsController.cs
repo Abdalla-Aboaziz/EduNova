@@ -1,12 +1,14 @@
 ﻿using EduNova.Application.Features.Lecture.Commands;
 using EduNova.Application.Features.Lecture.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DownloadsController : ControllerBase
     {
         private readonly IMediator _mediator;

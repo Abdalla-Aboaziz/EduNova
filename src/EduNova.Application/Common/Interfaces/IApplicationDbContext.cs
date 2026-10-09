@@ -24,5 +24,10 @@ public interface IApplicationDbContext
     DbSet<Grade> Grades { get; }
     DbSet<Meeting> Meetings { get; }
     DbSet<MeetingParticipant> MeetingParticipants { get; }
+    DbSet<Event> Events { get; }
+    DbSet<Reminder> Reminders { get; }
+    DbSet<AttendanceRecord> AttendanceRecords { get; }
+    DbSet<Notice> Notices { get; }
+    DbSet<DeviceToken> DeviceTokens { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,11 @@
+using EduNova.API.Hubs;
 using EduNova.API.Middleware;
 using EduNova.API.Services;
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Features.Events.Jobs;
+using Hangfire;
+using Hangfire.SqlServer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace EduNova.API;
 
@@ -11,12 +16,60 @@ namespace EduNova.API;
 /// </summary>
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApiServices(this IServiceCollection services)
+    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
         services.AddOpenApi();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<Application.Contracts.Services.IMeetingLiveNotifier, MeetingLiveNotifier>();
+
+        services.AddSignalR()
+            .AddStackExchangeRedis(configuration.GetConnectionString("Redis")!);
+
+        services.AddSignalRJwtSupport();
+
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("EduNova"), new SqlServerStorageOptions
+            {
+                CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                QueuePollInterval = TimeSpan.Zero,
+                UseRecommendedIsolationLevel = true,
+                DisableGlobalLocks = true
+            }));
+
+        services.AddHangfireServer();
+        services.AddScoped<ReminderDispatchJob>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSignalRJwtSupport(this IServiceCollection services)
+    {
+        services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            var events = options.Events ??= new JwtBearerEvents();
+            var existingOnMessageReceived = events.OnMessageReceived;
+
+            events.OnMessageReceived = async context =>
+            {
+                if (existingOnMessageReceived is not null)
+                {
+                    await existingOnMessageReceived(context);
+                }
+
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+            };
+        });
 
         return services;
     }
@@ -37,11 +90,16 @@ public static class DependencyInjection
             {
                 options.SwaggerEndpoint("/openapi/v1.json", "My API v1");
             });
+
+            app.UseHangfireDashboard("/hangfire");
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<MeetingHub>("/hubs/meetings");
 
         return app;
     }

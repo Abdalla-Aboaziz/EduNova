@@ -1,0 +1,30 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "EduNova_Dev123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - edunova-sqldata:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    depends_on:
+      - sqlserver
+      - redis
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__EduNova: "Server=sqlserver,1433;Database=EduNova;User Id=sa;Password=EduNova_Dev123!;TrustServerCertificate=true;MultipleActiveResultSets=true"
+      ConnectionStrings__Redis: "redis:6379"
+    ports:
+      - "8080:8080"
+
+volumes:
+  edunova-sqldata:

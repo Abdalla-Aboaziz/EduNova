@@ -8,6 +8,10 @@ using EduNova.Infrastructure.Repositories;
 using EduNova.Infrastructure.Services;
 using EduNova.Infrastructure.Services.AccountSevice;
 using EduNova.Infrastructure.Services.Files;
+using EduNova.Infrastructure.Services.Notifications;
+using EduNova.Infrastructure.Services.Video;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +39,6 @@ public static class DependencyInjection
         // Register the DbContext abstraction for the Application layer
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
         // Register Redis
         var redisConnection = configuration.GetConnectionString("Redis")
@@ -52,7 +55,35 @@ public static class DependencyInjection
         // register services in DI 
         services.AddScoped<ICacheRepository, CacheRepository>();
         services.AddScoped<ICacheService, CacheService>();
+
+        // Register the push notification service. Firebase is used when a
+        // service-account file is configured, otherwise a no-op implementation.
+        var firebaseCredentialsPath = configuration["Firebase:CredentialsPath"];
+        if (!string.IsNullOrWhiteSpace(firebaseCredentialsPath) && File.Exists(firebaseCredentialsPath))
+        {
+            try
+            {
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = CredentialFactory
+                        .FromFile(firebaseCredentialsPath, "service_account")
+                });
+            }
+            catch (InvalidOperationException)
+            {
+                // FirebaseApp is already initialized in this process.
+            }
+
+            services.AddScoped<IPushNotificationService, FirebasePushNotificationService>();
+        }
+        else
+        {
+            services.AddScoped<IPushNotificationService, NullPushNotificationService>();
+        }
+
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IProfileService, Services.ProfileService.ProfileService>();
+        services.AddScoped<IVideoTokenService, VideoTokenService>();
         return services;
     }
 }

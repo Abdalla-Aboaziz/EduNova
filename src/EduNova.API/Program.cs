@@ -1,10 +1,12 @@
 using EduNova.API;
 using EduNova.Application;
+using EduNova.Application.Features.Events.Jobs;
 using EduNova.Domain;
 using EduNova.Domain.Entities;
 using EduNova.Infrastructure;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Data.Seed;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 using System.Text;
@@ -39,7 +41,7 @@ try
         .AddDomainServices()
         .AddApplicationServices()
         .AddInfrastructureServices(builder.Configuration)
-        .AddApiServices();
+        .AddApiServices(builder.Configuration);
 
     builder.Services.AddIdentity<AppUser, AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -92,6 +94,22 @@ try
 
     var app = builder.Build();
 
+    // ── Recurring jobs ──────────────────────────────────────────────────
+    // Every minute, dispatch reminders that are due and send them as push
+    // notifications, then mark them as sent. Use the service-based API
+    // (IRecurringJobManager) so Hangfire resolves its storage from DI
+    // instead of relying on the static JobStorage.Current.
+    using (var jobScope = app.Services.CreateScope())
+    {
+        var recurringJobManager = jobScope.ServiceProvider
+            .GetRequiredService<IRecurringJobManager>();
+
+        recurringJobManager.AddOrUpdate<ReminderDispatchJob>(
+            "dispatch-due-reminders",
+            job => job.RunAsync(CancellationToken.None),
+            Cron.Minutely);
+    }
+
     // ── Seed demo data ──────────────────────────────────────────────────
     // Development only: fills the catalog tables once and exits early when
     // data already exists (idempotent). Run migrations before starting.
@@ -111,9 +129,6 @@ try
 
     // ── Configure middleware pipeline ───────────────────────────────────
     app.UseApiMiddleware();
-    app.UseAuthentication();
-    app.UseAuthorization();
-
     app.Run();
 }
 catch (Exception ex) when (ex is not HostAbortedException)

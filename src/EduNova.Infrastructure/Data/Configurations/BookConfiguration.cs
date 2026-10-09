@@ -12,6 +12,16 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.Description).HasMaxLength(500);
         builder.HasIndex(b => b.Title);
 
+        builder.HasOne(b => b.Subject)
+            .WithMany()
+            .HasForeignKey(b => b.SubjectId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(b => b.File)
+            .WithOne()
+            .HasForeignKey<Book>(b => b.FileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
 
     }
 }

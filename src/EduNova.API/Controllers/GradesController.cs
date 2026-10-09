@@ -1,12 +1,14 @@
 using EduNova.API.Common;
 using EduNova.Application.Features.Grades.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduNova.API.Controllers
 {
     [Route("api/grades")]
     [ApiController]
+    [Authorize]
     public class GradesController : ControllerBase
     {
         private readonly IMediator _mediator;

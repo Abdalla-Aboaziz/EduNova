@@ -21,7 +21,7 @@ namespace EduNova.Application.Features.Note.Handlers
 
         public async Task<List<NoteResponse>> Handle(GetAllNotesQuery request, CancellationToken cancellationToken)
         {
-            var userId = "1";//  ToDo   _currentUserService.UserId
+            var userId = _currentUserService.UserId ?? string.Empty;
             return await _dbContext.Notes
                 .Where(n => n.UserId == userId)
                 .Select(n => new NoteResponse

@@ -20,7 +20,7 @@ namespace EduNova.Application.Features.Note.Handlers
         }
         public async Task<string> Handle(DeleteNoteCommand request, CancellationToken cancellationToken)
         {
-            var userId = "1"; // TO DO  _currentUserService.UserId;
+            var userId = _currentUserService.UserId ?? string.Empty;
 
             var note = await _dbContext.Notes
                 .FirstOrDefaultAsync(
