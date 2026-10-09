@@ -1,10 +1,12 @@
 using EduNova.Application.Common.Caching;
 using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Contracts;
+using EduNova.Application.Contracts.Services;
 using EduNova.Application.Interfaces;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Repositories;
 using EduNova.Infrastructure.Services;
+using EduNova.Infrastructure.Services.AccountSevice;
 using EduNova.Infrastructure.Services.Files;
 using EduNova.Infrastructure.Services.Notifications;
 using FirebaseAdmin;
@@ -36,7 +38,8 @@ public static class DependencyInjection
         // Register the DbContext abstraction for the Application layer
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
-
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
         // Register Redis
         var redisConnection = configuration.GetConnectionString("Redis")
             ?? throw new InvalidOperationException(
@@ -78,6 +81,7 @@ public static class DependencyInjection
             services.AddScoped<IPushNotificationService, NullPushNotificationService>();
         }
 
+        services.AddScoped<ITokenService, TokenService>();
         return services;
     }
 }
