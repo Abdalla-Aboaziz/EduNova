@@ -1,5 +1,6 @@
-using EduNova.Application.Contracts.Services;
-using EduNova.Application.Features.Profile.DTOs;
+using EduNova.Application.Features.Profile.Commands;
+using EduNova.Application.Features.Profile.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,24 +11,30 @@ namespace EduNova.API.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
-    private readonly IProfileService _profileService;
+    private readonly IMediator _mediator;
 
-    public ProfileController(IProfileService profileService)
+    public ProfileController(IMediator mediator)
     {
-        _profileService = profileService;
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get(CancellationToken cancellationToken)
     {
-        var profile = await _profileService.GetCurrentUserAsync();
-        return Ok(profile);
+        var result = await _mediator.Send(new GetCurrentUserQuery(), cancellationToken);
+        return result.IsSuccess ? Ok(result.Value) : Problem(
+            statusCode: (int)result.Error.Type,
+            detail: result.Error.Message,
+            title: result.Error.Code);
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateProfileDto dto)
+    public async Task<IActionResult> Update([FromBody] UpdateProfileCommand command, CancellationToken cancellationToken)
     {
-        await _profileService.UpdateCurrentUserAsync(dto);
-        return Ok();
+        var result = await _mediator.Send(command, cancellationToken);
+        return result.IsSuccess ? Ok() : Problem(
+            statusCode: (int)result.Error.Type,
+            detail: result.Error.Message,
+            title: result.Error.Code);
     }
 }
