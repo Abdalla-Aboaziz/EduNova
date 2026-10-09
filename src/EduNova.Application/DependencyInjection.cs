@@ -1,5 +1,7 @@
 using EduNova.Application.Common.Behaviors;
 using EduNova.Application.Common.Mappings;
+using EduNova.Application.Interfaces;
+using EduNova.Domain.Entities;
 using FluentValidation;
 using MapsterMapper;
 using MediatR;

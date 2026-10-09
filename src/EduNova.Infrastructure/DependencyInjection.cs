@@ -1,10 +1,12 @@
 using EduNova.Application.Common.Caching;
 using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Contracts;
+using EduNova.Application.Contracts.Services;
 using EduNova.Application.Interfaces;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Repositories;
 using EduNova.Infrastructure.Services;
+using EduNova.Infrastructure.Services.AccountSevice;
 using EduNova.Infrastructure.Services.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +35,8 @@ public static class DependencyInjection
         // Register the DbContext abstraction for the Application layer
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
-
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenService, TokenService>();
         // Register Redis
         var redisConnection = configuration.GetConnectionString("Redis")
             ?? throw new InvalidOperationException(
@@ -49,6 +52,7 @@ public static class DependencyInjection
         // register services in DI 
         services.AddScoped<ICacheRepository, CacheRepository>();
         services.AddScoped<ICacheService, CacheService>();
+        services.AddScoped<ITokenService, TokenService>();
         return services;
     }
 }

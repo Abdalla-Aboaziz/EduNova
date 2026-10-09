@@ -1,10 +1,15 @@
 using EduNova.API;
 using EduNova.Application;
 using EduNova.Domain;
+using EduNova.Domain.Entities;
 using EduNova.Infrastructure;
 using EduNova.Infrastructure.Data;
 using EduNova.Infrastructure.Data.Seed;
+using Microsoft.AspNetCore.Identity;
 using Serilog;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 // ── Bootstrap Serilog ───────────────────────────────────────────────────
 // Temporary logger used only until the host is built and the real
@@ -36,6 +41,55 @@ try
         .AddInfrastructureServices(builder.Configuration)
         .AddApiServices();
 
+    builder.Services.AddIdentity<AppUser, AppRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+    var jwtKey = builder.Configuration["Jwt:Key"]
+        ?? throw new InvalidOperationException(
+            "JWT signing key is not configured.");
+
+    var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+        ?? throw new InvalidOperationException(
+            "JWT issuer is not configured.");
+
+    var jwtAudience = builder.Configuration["Jwt:Audience"]
+        ?? throw new InvalidOperationException(
+            "JWT audience is not configured.");
+
+    builder.Services
+        .AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtIssuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtAudience,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)),
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.FromMinutes(1)
+                };
+        });
+
+    builder.Services.AddAuthorization();
+
+
     var app = builder.Build();
 
     // ── Seed demo data ──────────────────────────────────────────────────
@@ -57,6 +111,8 @@ try
 
     // ── Configure middleware pipeline ───────────────────────────────────
     app.UseApiMiddleware();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.Run();
 }
