@@ -97,10 +97,20 @@ try
     // data already exists (idempotent). Run migrations before starting.
     if (app.Environment.IsDevelopment())
     {
-        using var seedScope = app.Services.CreateScope();
-        await DbSeeder.SeedAsync(
-            seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>(),
-            seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder"));
+        try
+        {
+            using var seedScope = app.Services.CreateScope();
+            await DbSeeder.SeedAsync(
+                seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>(),
+                seedScope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder"));
+        }
+        catch (Exception ex)
+        {
+            // Do not stop the application when seeding fails locally (e.g., DB not available).
+            // Log the error and continue so Swagger and other infrastructure can start.
+            var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder");
+            logger.LogWarning(ex, "Database seeding failed - continuing without seed.\nCause: {Message}", ex.Message);
+        }
     }
 
     // ── Serilog request logging ─────────────────────────────────────────

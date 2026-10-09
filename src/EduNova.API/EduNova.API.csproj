@@ -4,7 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>f19ef289-7036-421f-8f9c-82f0e25647a2</UserSecretsId>
+    <!-- Removed UserSecretsId to avoid failing startup when the secrets file is corrupted on developer machines.
+         Use `dotnet user-secrets init` and configure secrets.json correctly if you need user secrets. -->
   </PropertyGroup>
 
   <ItemGroup>
