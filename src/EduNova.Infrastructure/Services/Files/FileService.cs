@@ -93,7 +93,7 @@ namespace EduNova.Infrastructure.Services.Files
         }
 
 
-        public async Task<(Stream? stream, string contentType, string fileName)> StreamAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<(FileStream? stream, string contentType, string fileName)> StreamAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var file = await _context.Files.FindAsync(id, cancellationToken);
             if (file is null)
