@@ -11,14 +11,18 @@ namespace EduNova.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<Guid>(
+            // SQL Server cannot implicitly convert int to uniqueidentifier,
+            // and the old int values referenced no Subjects table (no FK existed),
+            // so drop the column and re-add it with the new type.
+            migrationBuilder.DropColumn(
+                name: "SubjectId",
+                table: "Books");
+
+            migrationBuilder.AddColumn<Guid>(
                 name: "SubjectId",
                 table: "Books",
                 type: "uniqueidentifier",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldNullable: true);
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_FileId",
@@ -67,14 +71,15 @@ namespace EduNova.Infrastructure.Migrations
                 name: "IX_Books_SubjectId",
                 table: "Books");
 
-            migrationBuilder.AlterColumn<int>(
+            migrationBuilder.DropColumn(
+                name: "SubjectId",
+                table: "Books");
+
+            migrationBuilder.AddColumn<int>(
                 name: "SubjectId",
                 table: "Books",
                 type: "int",
-                nullable: true,
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier",
-                oldNullable: true);
+                nullable: true);
         }
     }
 }
