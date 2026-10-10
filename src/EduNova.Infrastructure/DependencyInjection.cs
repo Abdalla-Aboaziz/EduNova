@@ -39,6 +39,7 @@ public static class DependencyInjection
         // Register the DbContext abstraction for the Application layer
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
         // Register Redis
         var redisConnection = configuration.GetConnectionString("Redis")
