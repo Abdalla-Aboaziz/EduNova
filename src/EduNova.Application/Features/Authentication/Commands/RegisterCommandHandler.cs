@@ -20,7 +20,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
         {
             DisplayName = request.DisplayName,
             Email = request.Email,
-            Password = request.Password
+            Password = request.Password,
+            PhoneNumber = request.PhoneNumber
         };
 
         return await _authService.RegisterAsync(dto);

@@ -38,11 +38,22 @@ namespace EduNova.Infrastructure.Services.AccountSevice
                     "User with this email already exists.");
             }
 
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                var existingByPhone = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == dto.PhoneNumber);
+                if (existingByPhone is not null)
+                {
+                    throw new InvalidOperationException(
+                        "User with this phone number already exists.");
+                }
+            }
+
             var user = new AppUser
             {
                 DisplayName = dto.DisplayName,
                 Email = dto.Email,
-                UserName = dto.Email
+                UserName = dto.Email,
+                PhoneNumber = dto.PhoneNumber
             };
 
             var result = await _userManager.CreateAsync(
