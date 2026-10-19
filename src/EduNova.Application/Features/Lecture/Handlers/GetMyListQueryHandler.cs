@@ -1,5 +1,6 @@
 using EduNova.Application.Common.Interfaces;
 using EduNova.Application.Common.Pagination;
+using EduNova.Application.Common.Results;
 using EduNova.Application.Features.Lecture.Queries;
 using EduNova.Application.Features.Lecture.Responses;
 using EduNova.Application.Interfaces;
@@ -10,9 +11,9 @@ namespace EduNova.Application.Features.Lecture.Handlers
 {
     public sealed class GetMyListQueryHandler(
         IApplicationDbContext context, ICurrentUserService currentUser)
-        : IRequestHandler<GetMyListQuery, PagedResult<MyListResponse>>
+        : IRequestHandler<GetMyListQuery, Result<PagedResult<MyListResponse>>>
     {
-        public async Task<PagedResult<MyListResponse>> Handle(GetMyListQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedResult<MyListResponse>>> Handle(GetMyListQuery request, CancellationToken cancellationToken)
         {
             var userId = currentUser.UserId;
 
@@ -23,7 +24,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
             .Join(context.Lectures, m => m.LectureId, l => l.Id,
                 (m, l) => new MyListResponse(l.Id, l.Title, l.DurationInSeconds, m.AddedAt))
             .ToPagedResultAsync(request, cancellationToken);
-            return items;
+            return Result.Success(items);
         }
     }
 }

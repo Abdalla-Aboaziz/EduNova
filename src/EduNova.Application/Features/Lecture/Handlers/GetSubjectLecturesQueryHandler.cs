@@ -1,4 +1,5 @@
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Results;
 using EduNova.Application.Features.Lecture.Queries;
 using EduNova.Application.Features.Lecture.Responses;
 using EduNova.Application.Interfaces;
@@ -9,9 +10,9 @@ namespace EduNova.Application.Features.Lecture.Handlers
 {
     public sealed class GetSubjectLecturesQueryHandler(
         IApplicationDbContext context, ICurrentUserService currentUser)
-        : IRequestHandler<GetSubjectLecturesQuery, List<LectureResponse>>
+        : Result<IRequestHandler<GetSubjectLecturesQuery, List<LectureResponse>>>
     {
-        public async Task<List<LectureResponse>> Handle(GetSubjectLecturesQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<LectureResponse>>> Handle(GetSubjectLecturesQuery request, CancellationToken cancellationToken)
         {
             var userId = currentUser.UserId;
 
@@ -25,7 +26,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
                      l.DownloadedLectures.Any(d => d.UserId == userId)))
                  .ToListAsync(cancellationToken);
 
-            return lectures;
+            return Result.Success(lectures);
         }
     }
 }
