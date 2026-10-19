@@ -17,7 +17,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
         public async Task<(byte[] FileContent, string ContentType, string FileName)?> Handle(
             DownloadLectureQuery request, CancellationToken cancellationToken)
         {
-            var userId = "101"; // TODO: Replace with currentUser.UserId when authentication is implemented
+            var userId = currentUser.UserId;
 
             logger.LogInformation("User {UserId} downloading LectureId {LectureId}", userId, request.LectureId);
 

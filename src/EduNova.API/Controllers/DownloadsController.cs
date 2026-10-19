@@ -19,8 +19,8 @@ namespace EduNova.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
-        => Ok(await _mediator.Send(new GetMyDownloadsQuery(), cancellationToken));
+        public async Task<IActionResult> Get([FromQuery] GetMyDownloadsQuery query, CancellationToken cancellationToken)
+            => Ok(await _mediator.Send(query, cancellationToken));
 
         [HttpPost("{lectureId}")]
         public async Task<IActionResult> Register([FromRoute] Guid lectureId, CancellationToken cancellationToken)

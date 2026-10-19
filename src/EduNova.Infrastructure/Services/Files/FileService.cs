@@ -50,12 +50,47 @@ namespace EduNova.Infrastructure.Services.Files
                 return ([], string.Empty, string.Empty);
             var path = Path.Combine(_filePath, file.StoredFileName);
 
-            MemoryStream memoryStream = new();
-            using FileStream fileStream = new(path, FileMode.Open);
-            fileStream.CopyTo(memoryStream);
+            try
+            {
+                MemoryStream memoryStream = new();
+                using FileStream fileStream = new(path, FileMode.Open);
+                fileStream.CopyTo(memoryStream);
 
-            memoryStream.Position = 0;
-            return (memoryStream.ToArray(), file.ContentType, file.FileName);
+                memoryStream.Position = 0;
+                return (memoryStream.ToArray(), file.ContentType, file.FileName);
+
+            }
+            catch (FileNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "File not found for download. FileId: {FileId}", id);
+            }
+            return ([], string.Empty, string.Empty);
+
+
+            /*
+             public async Task<(byte[] fileContent, string contentType, string fileName)> DownloadAsync(Guid id, CancellationToken cancellationToken = default)
+            {
+                var file = await _context.Files.FindAsync(new object[] { id }, cancellationToken);
+                if (file is null)
+                    return (Array.Empty<byte>(), string.Empty, string.Empty);
+
+                var path = Path.Combine(_filePath, file.StoredFileName);
+
+                try
+                {
+                    // قراءة جميع البايتات بشكل غير متزامن ومباشر
+                    byte[] fileContent = await File.ReadAllBytesAsync(path, cancellationToken);
+                    return (fileContent, file.ContentType, file.FileName);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    _logger.LogWarning(ex, "File not found on disk for download. FileId: {FileId}, Path: {Path}", id, path);
+                    return (Array.Empty<byte>(), string.Empty, string.Empty);
+                }
+            }
+             
+             
+             */
         }
 
 

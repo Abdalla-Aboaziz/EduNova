@@ -1,4 +1,5 @@
 using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Pagination;
 using EduNova.Application.Features.Lecture.Queries;
 using EduNova.Application.Features.Lecture.Responses;
 using EduNova.Application.Interfaces;
@@ -9,11 +10,11 @@ namespace EduNova.Application.Features.Lecture.Handlers
 {
     public sealed class GetMyDownloadsHandler(
         IApplicationDbContext context, ICurrentUserService currentUser)
-        : IRequestHandler<GetMyDownloadsQuery, List<DownloadResponse>>
+        : IRequestHandler<GetMyDownloadsQuery, PagedResult<DownloadResponse>>
     {
-        public Task<List<DownloadResponse>> Handle(GetMyDownloadsQuery request, CancellationToken cancellationToken)
+        public Task<PagedResult<DownloadResponse>> Handle(GetMyDownloadsQuery request, CancellationToken cancellationToken)
         {
-            var userId = "101";//_currentUserService.UserId;  ToDo: Get the current user ID from the ICurrentUserService
+            var userId = currentUser.UserId;
 
             var downloads = context.DownloadedLectures
              .AsNoTracking()
@@ -28,8 +29,10 @@ namespace EduNova.Application.Features.Lecture.Handlers
                        l.Title,
                       l.DurationInSeconds,
                        d.DownloadedAt
-                   )).ToListAsync(cancellationToken);
+                   )).ToPagedResultAsync(request, cancellationToken);
+
             return downloads;
+
         }
     }
 }
