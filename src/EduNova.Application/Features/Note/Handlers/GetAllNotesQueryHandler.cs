@@ -1,13 +1,13 @@
 ﻿using EduNova.Application.Common.Interfaces;
+using EduNova.Application.Common.Pagination;
 using EduNova.Application.Features.Note.Queries;
 using EduNova.Application.Features.Note.Responses;
 using EduNova.Application.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace EduNova.Application.Features.Note.Handlers
 {
-    public class GetAllNotesQueryHandler : IRequestHandler<GetAllNotesQuery, List<NoteResponse>>
+    public class GetAllNotesQueryHandler : IRequestHandler<GetAllNotesQuery, PagedResult<NoteResponse>>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;
@@ -19,10 +19,10 @@ namespace EduNova.Application.Features.Note.Handlers
         }
 
 
-        public async Task<List<NoteResponse>> Handle(GetAllNotesQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<NoteResponse>> Handle(GetAllNotesQuery request, CancellationToken cancellationToken)
         {
             var userId = _currentUserService.UserId ?? string.Empty;
-            return await _dbContext.Notes
+            var notes = await _dbContext.Notes
                 .Where(n => n.UserId == userId)
                 .Select(n => new NoteResponse
                 {
@@ -33,7 +33,8 @@ namespace EduNova.Application.Features.Note.Handlers
                     CreatedAt = n.CreatedAt,
                     UpdatedAt = n.UpdatedAt
                 })
-                .ToListAsync(cancellationToken);
+                .ToPagedResultAsync(request, cancellationToken);
+            return notes;
         }
     }
 }

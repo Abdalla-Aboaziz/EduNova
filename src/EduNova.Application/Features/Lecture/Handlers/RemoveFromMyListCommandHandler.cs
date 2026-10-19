@@ -14,8 +14,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
     {
         public async Task<bool> Handle(RemoveFromMyListCommand request, CancellationToken cancellationToken)
         {
-            var userId = "101";//_currentUser.UserId; // TODO: Implement user authentication and get the current user ID
-
+            var userId = currentUser.UserId!;
             var deleted = await context.MyListItems
                 .Where(x => x.UserId == userId && x.LectureId == request.LectureId)
                 .ExecuteDeleteAsync(cancellationToken);

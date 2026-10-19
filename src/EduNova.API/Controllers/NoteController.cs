@@ -1,4 +1,5 @@
-﻿using EduNova.Application.Features.Note.Command;
+﻿using EduNova.API.Attributes;
+using EduNova.Application.Features.Note.Command;
 using EduNova.Application.Features.Note.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +20,10 @@ namespace EduNova.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [RedisCache(duration: 5)]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllNotesQuery query, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAllNotesQuery());
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
         [HttpGet("{id}")]

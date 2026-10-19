@@ -14,7 +14,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
     {
         public async Task<bool> Handle(RemoveDownloadCommand request, CancellationToken cancellationToken)
         {
-            var userId = "101";//_currentUser.UserId; // TODO: Implement user authentication and get the current user ID
+            var userId = currentUser.UserId;
 
             var deleted = await context.DownloadedLectures
                 .Where(x => x.UserId == userId && x.LectureId == request.LectureId)

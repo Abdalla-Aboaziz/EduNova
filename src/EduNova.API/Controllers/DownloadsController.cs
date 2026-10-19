@@ -1,4 +1,5 @@
-﻿using EduNova.Application.Features.Lecture.Commands;
+﻿using EduNova.API.Attributes;
+using EduNova.Application.Features.Lecture.Commands;
 using EduNova.Application.Features.Lecture.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,7 @@ namespace EduNova.API.Controllers
         }
 
         [HttpGet]
+        [RedisCache(duration: 5)]
         public async Task<IActionResult> Get([FromQuery] GetMyDownloadsQuery query, CancellationToken cancellationToken)
             => Ok(await _mediator.Send(query, cancellationToken));
 

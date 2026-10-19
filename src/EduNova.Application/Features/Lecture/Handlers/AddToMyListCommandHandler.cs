@@ -15,7 +15,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
     {
         public async Task<bool> Handle(AddToMyListCommand request, CancellationToken cancellationToken)
         {
-            var userId = "101";// _currentUser.UserId;   // TODO: Implement user authentication and get the current user ID
+            var userId = currentUser.UserId;
 
             if (!await context.Lectures.AnyAsync(l => l.Id == request.LectureId, cancellationToken))
             {
@@ -32,7 +32,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
                     new MyListItem
                     {
                         LectureId = request.LectureId,
-                        UserId = userId
+                        UserId = userId!
                     }
                 );
                 await context.SaveChangesAsync(cancellationToken);

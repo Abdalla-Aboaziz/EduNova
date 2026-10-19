@@ -15,7 +15,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
     {
         public async Task<bool> Handle(RegisterDownloadCommand request, CancellationToken cancellationToken)
         {
-            var userId = "101";//_currentUserService.UserId; TODO: Implement user authentication and get the actual user ID
+            var userId = currentUserService.UserId;
 
             if (!await context.Lectures.AnyAsync(l => l.Id == request.LectureId, cancellationToken))
             {

@@ -32,7 +32,7 @@ namespace EduNova.Application.Features.Lecture.Handlers
                     DurationInSeconds = request.DurationInSeconds,
                     VideoFileId = videoId,
                     ThumbnailFileId = thumbnailId,
-                    UploadedById = "100",      /// To Do Replase The "100" with currentUser.UserId when authentication is implemented
+                    UploadedById = currentUser.UserId!,
                 };
 
                 await context.Lectures.AddAsync(lecture, cancellationToken);
