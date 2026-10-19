@@ -21,7 +21,7 @@ namespace EduNova.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var result = await _mediator.Send(new RegisterCommand(dto.DisplayName, dto.Email, dto.Password));
+            var result = await _mediator.Send(new RegisterCommand(dto.DisplayName, dto.Email, dto.Password, dto.PhoneNumber));
             return Ok(result);
         }
 
